@@ -55,10 +55,5 @@ This markdown collects papers related to **LLM Hallucination**,  **LLM Interpret
 
 #### Related Methods
 
-- \[[arxiv](https://arxiv.org/abs/2308.07201)\] ChatEval: Towards Better LLM-based Evaluators through Multi-Agent Debate. `2023.8`
+- \[[arxiv](https://arxiv.org/pdf/2310.00603.pdf)\] FAITHFUL EXPLANATIONS OF BLACK-BOX NLP MODELS USING LLM-GENERATED COUNTERFACTUALS. `2023.8`
 
-- \[[arxiv](https://arxiv.org/abs/2305.14325)\] Improving Factuality and Reasoning in Language Models through Multiagent Debate. `2023.5`
-
-- \[[arxiv](https://arxiv.org/abs/2305.11595)\] Examining Inter-Consistency of Large Language Models Collaboration: An In-depth Analysis via Debate. `2023.5`
-
-- \[[arxiv](https://arxiv.org/abs/2305.19118)\] Encouraging Divergent Thinking in Large Language Models through Multi-Agent Debate. `2023.5`
