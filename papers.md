@@ -39,7 +39,7 @@ This markdown collects papers related to **LLM Hallucination**,  **LLM Interpret
 
 
 
-### LLM Interpretbility
+### LLM Agents Reasonings
 
 #### Related Methods
 
