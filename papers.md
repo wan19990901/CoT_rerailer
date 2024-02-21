@@ -29,6 +29,11 @@ This markdown collects papers related to **LLM Hallucination**,  **LLM Interpret
 
 #### Related Methods
 
+https://openreview.net/pdf?id=I5rsM4CY2z
+https://arxiv.org/abs/2308.07758
+https://arxiv.org/abs/2212.09561
+https://arxiv.org/abs/2308.00436
+
 ### LLM Interpretbility
 
 #### Survey
@@ -36,6 +41,8 @@ This markdown collects papers related to **LLM Hallucination**,  **LLM Interpret
 - \[[arxiv](https://arxiv.org/abs/2209.11326)\] Towards Faithful Model Explanation in NLP: A Survey. `2024.1`
 
 #### Related Methods
+
+https://aclanthology.org/2023.findings-emnlp.123.pdf
 
 
 
