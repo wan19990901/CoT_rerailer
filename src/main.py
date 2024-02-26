@@ -157,26 +157,42 @@ def majority_vote(checker_seq_list):
 if __name__ == '__main__':
     config = {
         'dataset_fp': 'Self_Check.csv',
-        'test_case_number': 145,
-        'ngram': 1,
+        'test_case_number': [145],
+        'ngram': 'all',
         'num_agents': 3
     }
 
+    result_df_dict = {
+        'CaseID': [],
+        'Question': [],
+        'Correct Answer':[],
+        'COT Answer':[],
+        'Hallu Seq':[]
+    }
+
     df = load_df(config['dataset_fp'])
-    test_sample = select_sample(df, config['test_case_number'])
-
-    subject = test_sample['Category']
-    question = test_sample['Question']
-    correct_answer = test_sample['Correct Answer']
-
-    cot, steps, final_answer = generate_cot_response(subject, question)
+    for sample_id in config['test_case_number']:
 
 
-    for ngram in [3,'all']:
+        test_sample = select_sample(df, sample_id)
+
+        subject = test_sample['Category']
+        question = test_sample['Question']
+        correct_answer = test_sample['Correct Answer']
+
+        result_df_dict['CaseID'].append(sample_id)
+        result_df_dict['Question'].append(question)
+        result_df_dict['Correct Answer'].append(correct_answer)
+
+
+        cot, steps, final_answer = generate_cot_response(subject, question)
+        result_df_dict['COT Answer'].append(final_answer)
+
+
         multi_checker = []
         for i in range(config['num_agents']):
             check_list = generate_variable_extractor(cot, steps,
-                                                     ngram=ngram)
+                                                     ngram=config['ngram'])
 
             multi_checker.append(check_list)
 
@@ -185,3 +201,7 @@ if __name__ == '__main__':
 
         majority_vote_list = majority_vote(multi_checker)
         print('\n\nMajority Vote: ', majority_vote_list)
+        result_df_dict['Hallu Seq'].append(majority_vote_list)
+
+    result_df = pd.DataFrame.from_dict(result_df_dict)
+    result_df.to_csv('../result/error_analysis.csv')

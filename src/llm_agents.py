@@ -56,7 +56,8 @@ def cot_agent(subject, question, temp=0, model_name='gpt-4-0125-preview'):
         ResponseSchema(name="Number of Steps Proposed",
                        description="return a simple integer output which indicates the number of steps you proposed in the Chain of Thought"),
         ResponseSchema(name="Final Answer",
-                       description="Give me your final answer, if have options provided, just give me the option index")
+                       description="Give me your final answer, if have options provided, just give me the option index. Follow"
+                                   "The format [final_answer or correct_option_index]")
     ]
     output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
     success = False
@@ -208,7 +209,7 @@ def ngram_checker_agent2(subject, question, current_step, cot,extracted_var, tem
         '''You are a professional specialized in {subject}. You need to help me verify my steps when I solve the question.
         I am currently at step #{current_step}.
 
-        Is the current step  computationally correct in condition of all previous steps?. 
+        Is the current step  computationally correct in condition of provided variables and formulas?. 
         To justify the correctness, please refer to the extracted variable and formula I provided to you.  
 
         If it is correct, then verify that if my current step make the previous step hold. In other words, 
@@ -239,6 +240,8 @@ def ngram_checker_agent2(subject, question, current_step, cot,extracted_var, tem
                        description='''
                        say [YES] if the logic is correct and the question is well-understood, otherwise [NO] .!!! If at Step 1, since 
                         we have no step 0, instead the correctness should reflect if I correctly understood the answer.
+                        Is the current step  computationally correct in condition of provided variables and formulas?. 
+                        To justify the correctness, please refer to the extracted variable and formula I provided to you.  
                         '''),
         ResponseSchema(name="Logic Consistency",
                        description='''
@@ -247,7 +250,9 @@ def ngram_checker_agent2(subject, question, current_step, cot,extracted_var, tem
                         '''),
         ResponseSchema(name="Dependency",
                        description='''
-                           Find which previous steps led to the incorrectness or inconsistency , state which steps they were as:
+                           Find which previous steps led to the incorrectness or inconsistency . The whole idea is to 
+                           discuss that if the current step is incorrect or inconsistent, where did the error chain start
+                           from. What previous steps are the root cause of the error. Follow the template:
                            [[Incorrectness] <- [Incorrect Previous Steps]\n
                            [Inconsistency] <- [Inconsistent Previous Steps]]
                            If no incorrectness or inconsistency, simply return [N/A]
