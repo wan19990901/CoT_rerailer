@@ -81,20 +81,127 @@ def geneate_ngram_step_checker(cot, steps, final_answer, ngram=1):
 
     return check_list
 
+def generate_variable_extractor(cot, steps, ngram=1):
+    check_list = []
+    previous_variables = 'N/A'
+    for i in range(int(steps)):
+        current_step = i + 1
+
+        if ngram == 'all':
+            ngram = int(steps)
+
+        if ngram < current_step:
+            if current_step == int(steps):
+                pattern = f'[sS]tep\s?{current_step - ngram + 1}.*'
+                match = re.search(pattern, cot, re.DOTALL)
+                if match:
+                    masked_cot = match.group()
+                else:
+                    print("No match found.")
+                    masked_cot = cot
+            else:
+                pattern = f'[sS]tep\s?{current_step - ngram + 1}.*?(?=[sS]tep\s?{current_step + 1})'
+                match = re.search(pattern, cot, re.DOTALL)
+                if match:
+                    masked_cot = match.group()
+                else:
+                    print("No match found.")
+                    masked_cot = cot
+        else:
+            pattern = f'[sS]tep\s?1.*?(?=[sS]tep\s?{current_step + 1})'
+            match = re.search(pattern, cot, re.DOTALL)
+            if match:
+                masked_cot = match.group()
+            else:
+                print("No match found.")
+                masked_cot = cot
+        success= False
+        while not success:
+            try:
+                conditional_check_result = variable_agent(subject=subject, current_step=current_step, cot=masked_cot,
+                                                          question=question,previous_variables=previous_variables)
+                response = output_repraser(conditional_check_result)
+
+                print(f'Step {current_step}:')
+                for key,value in response.items():
+                    print(f'{key}: {value}\n')
+
+                previous_variables = (response['Current Variable'])
+                response2 = output_repraser(ngram_checker_agent2(subject=subject, current_step=current_step, cot=masked_cot,
+                                                               extracted_var=previous_variables, question=question))
+                print(f'Step {current_step}', response2, '\n\n')
+                check_list.append((response2['Step Correctness'], response2['Logic Consistency']))
+                success = True
+            except:
+                success = False
+    print('------------------------------------------------------')
+    print(check_list)
+    print('------------------------------------------------------')
+    print(f'The ground truth answer should be: {correct_answer}')
+
+    return check_list
+
+def majority_vote(checker_seq_list):
+    transposed_list = list(zip(*checker_seq_list))
+
+    # Majority vote for each tuple position
+    majority_vote_list = []
+    for tuples in transposed_list:
+        # Count occurrences of each tuple and find the most common
+        counter = Counter(tuples)
+        most_common_tuple, _ = counter.most_common(1)[0]
+        majority_vote_list.append(most_common_tuple)
+    return majority_vote_list
+
 
 if __name__ == '__main__':
     config = {
-        'dataset_fp':'combined_df.csv',
-        'test_case_number':145,
-        'ngram': 3
+        'dataset_fp': 'Self_Check.csv',
+        'test_case_number': [145],
+        'ngram': 'all',
+        'num_agents': 3
+    }
+
+    result_df_dict = {
+        'CaseID': [],
+        'Question': [],
+        'Correct Answer':[],
+        'COT Answer':[],
+        'Hallu Seq':[]
     }
 
     df = load_df(config['dataset_fp'])
-    test_sample = select_sample(df, config['test_case_number'])
+    for sample_id in config['test_case_number']:
 
-    subject = test_sample['Category']
-    question = test_sample['Question']
-    correct_answer = test_sample['Correct Answer']
 
-    cot, steps, final_answer = generate_cot_response(subject, question)
-    check_list = geneate_ngram_step_checker(cot, steps, final_answer, config['ngram'])
+        test_sample = select_sample(df, sample_id)
+
+        subject = test_sample['Category']
+        question = test_sample['Question']
+        correct_answer = test_sample['Correct Answer']
+
+        result_df_dict['CaseID'].append(sample_id)
+        result_df_dict['Question'].append(question)
+        result_df_dict['Correct Answer'].append(correct_answer)
+
+
+        cot, steps, final_answer = generate_cot_response(subject, question)
+        result_df_dict['COT Answer'].append(final_answer)
+
+
+        multi_checker = []
+        for i in range(config['num_agents']):
+            check_list = generate_variable_extractor(cot, steps,
+                                                     ngram=config['ngram'])
+
+            multi_checker.append(check_list)
+
+        for index, content in enumerate(multi_checker):
+            print(f'{index}: {content}')
+
+        majority_vote_list = majority_vote(multi_checker)
+        print('\n\nMajority Vote: ', majority_vote_list)
+        result_df_dict['Hallu Seq'].append(majority_vote_list)
+
+    result_df = pd.DataFrame.from_dict(result_df_dict)
+    result_df.to_csv('../result/error_analysis.csv')
