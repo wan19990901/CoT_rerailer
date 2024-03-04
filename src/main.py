@@ -26,7 +26,13 @@ def select_sample(df, test_case_number=0):
 
 def generate_cot_response(subject, question):
     result = cot_agent(subject=subject, question=question)
-    forward_result = output_repraser(result)
+    success = False
+    while not success:
+        try:
+            forward_result = output_repraser(result)
+            success = True
+        except:
+            success = False
     for key, value in forward_result.items():
         print(key)
         print(value)
@@ -142,22 +148,28 @@ def generate_variable_extractor(cot, steps, ngram=1):
     return check_list
 
 def majority_vote(checker_seq_list):
-    transposed_list = list(zip(*checker_seq_list))
 
     # Majority vote for each tuple position
-    majority_vote_list = []
-    for tuples in transposed_list:
-        # Count occurrences of each tuple and find the most common
-        counter = Counter(tuples)
-        most_common_tuple, _ = counter.most_common(1)[0]
-        majority_vote_list.append(most_common_tuple)
-    return majority_vote_list
+    majority_vote = []
+    for i in range(len(checker_seq_list[0])):
+        # Get the i-th element from each list and count occurrences
+        ith_elements = [lst[i] for lst in checker_seq_list]
+        # Count occurrences of each answer for both elements in the tuple
+        count_first = Counter([elem[0] for elem in ith_elements])
+        count_second = Counter([elem[1] for elem in ith_elements])
+        # Get the most common element with majority vote
+        majority_first = count_first.most_common(1)[0][0]
+        majority_second = count_second.most_common(1)[0][0]
+        # Add the majority vote tuple to the result list
+        majority_vote.append((majority_first, majority_second))
+
+    return majority_vote
 
 
 if __name__ == '__main__':
     config = {
         'dataset_fp': 'Self_Check.csv',
-        'test_case_number': [145],
+        'test_case_number': [145,146,147,148,149],
         'ngram': 'all',
         'num_agents': 3
     }

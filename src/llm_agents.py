@@ -42,7 +42,7 @@ def output_repraser(input_string):
     return data_dict
 
 
-def cot_agent(subject, question, temp=0, model_name='gpt-4-0125-preview'):
+def cot_agent(subject, question, temp=0, model_name='gpt-3.5-turbo-0125'):
     system_prompt = (
         "You are a professional specialized in {subject}. You need to help me answer the given question."
         "Notice that you need to solve the question step by step. Do not jump to the answer directly."
@@ -211,6 +211,8 @@ def ngram_checker_agent2(subject, question, current_step, cot,extracted_var, tem
 
         Is the current step  computationally correct in condition of provided variables and formulas?. 
         To justify the correctness, please refer to the extracted variable and formula I provided to you.  
+        YOU MUST NOTICE THAT MATHEMATICAL EQUIVALENT STATEMENTS ARE THE SAME EVEN THOUGH THEY HAVE DIFFERENT EXPRESSIONS!
+        THEY ARE BOTH CORRECT!
 
         If it is correct, then verify that if my current step make the previous step hold. In other words, 
         check the logic consistency of step n in conditional of <step k to step n-1> where n is my current step and k is the first step number in the provided cot steps.
@@ -238,7 +240,7 @@ def ngram_checker_agent2(subject, question, current_step, cot,extracted_var, tem
                     '''),
         ResponseSchema(name="Step Correctness",
                        description='''
-                       say [YES] if the logic is correct and the question is well-understood, otherwise [NO] .!!! If at Step 1, since 
+                       say [YES] if the logic and computation are correct and the question is well-understood, otherwise [NO] .!!! If at Step 1, since 
                         we have no step 0, instead the correctness should reflect if I correctly understood the answer.
                         Is the current step  computationally correct in condition of provided variables and formulas?. 
                         To justify the correctness, please refer to the extracted variable and formula I provided to you.  
