@@ -63,17 +63,17 @@ def cot_agent(subject, question, temp=0, model_name='gpt-4-0125-preview'):
     success = False
     while not success:
         try:
-            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
+            worker = ChatModelWorker(output_parser=output_parser,temperature=temp, model=model_name)
             chain = worker.chain_generator(system_prompt, human_prompt)
             out_put = chain.run(subject=subject,
                                 question=question)
 
             success = True
-        except:
-            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
-            chain = worker.chain_generator(system_prompt, human_prompt)
-            out_put = chain.run(subject=subject,
-                                question=question)
+            out_put = output_repraser(out_put)
+            success = True
+        except Exception as e:
+            print("Error:", e)
+            continue
     return out_put
 
 
@@ -114,16 +114,15 @@ def ngram_checker_agent(subject, question, current_step, cot, final_answer, temp
                         According to your analysis of correctness and consistency, help me revise the current step so that
                         it becomes correct and consistent.
                     '''),
-        ResponseSchema(name="Step Correctness",
-                       description='''
-                       say [YES] if the logic is correct and the question is well-understood, otherwise [NO] .!!! If at Step 1, since 
-                        we have no step 0, instead the correctness should reflect if I correctly understood the answer.
-                        '''),
         ResponseSchema(name="Logic Consistency",
                        description='''
-                       say [YES] if consistent, otherwise [NO].!!! If at Step 1, since 
-                        we have no step 0, instead say [N/A]
-                        ''')
+                       say [YES] if the logic of the provided thought process is correct and the question is well-understood, otherwise [NO] .!!! If at Step 1, since  we have no step 0, instead the correctness should reflect if I correctly understood the answer.
+                        '''),
+        # ResponseSchema(name="Logic Consistency",
+        #                description='''
+        #                say [YES] if consistent, otherwise [NO].!!! If at Step 1, since 
+        #                 we have no step 0, instead say [N/A]
+        #                 ''')
     ]
     output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
     success = False
@@ -204,23 +203,18 @@ def variable_agent(subject, question, cot,current_step,previous_variables ,temp=
                                 question=question)
     return out_put
 
-def ngram_checker_agent2(subject, question, current_step, cot,extracted_var, temp=0, model_name='gpt-4-0125-preview'):
+def ngram_checker_agent2(subject, question, current_step, cot, add_info, temp=0, model_name='gpt-4-0125-preview'):
     system_prompt = (
-        '''You are a professional specialized in {subject}. You need to help me verify my steps when I solve the question.
+        '''You are a professional specialized in {subject}. You need to help me verify my reasoning steps when I solve the question.
         I am currently at step #{current_step}.
 
-        Is the current step  computationally correct in condition of provided variables and formulas?. 
-        To justify the correctness, please refer to the extracted variable and formula I provided to you.  
-
         If it is correct, then verify that if my current step make the previous step hold. In other words, 
-        check the logic consistency of step n in conditional of <step k to step n-1> where n is my current step and k is the first step number in the provided cot steps.
-        provided thought process. In the other words, is my current step supported by previous n-1 steps? It is important that for each analysis, ignore 
-        steps other than the current step and the previous steps! In addition, for your reference, the question is given as {question}. 
+        check the logic consistency of step my current step given the condition of all the previous steps givem the provided thought process. In the other words, is my current step supported by the previous steps? In addition, for your reference, the question is given as {question}. 
 
         At step 1, since we have no step 0, instead the correctness and consistency should reflect if I correctly understood the answer.
         \n{format_instructions}
 ''')
-    human_prompt = "Here is my complete thought process {cot}, you can find all the variable and formula you need on {extracted_var}"
+    human_prompt = "Here is my complete thought process {cot}"
 
     response_schemas = [
 
@@ -233,29 +227,27 @@ def ngram_checker_agent2(subject, question, current_step, cot,extracted_var, tem
                         '''),
         ResponseSchema(name="Corrected Step",
                        description='''
-                        According to your analysis of correctness and consistency, help me revise the current step so that
-                        it becomes correct and consistent.
+                        According to your analysis of consistency, help me revise the current step so that
+                        it becomes correct and consistent. If no inconsistency, simply return [N/A]
                     '''),
-        ResponseSchema(name="Step Correctness",
-                       description='''
-                       say [YES] if the logic is correct and the question is well-understood, otherwise [NO] .!!! If at Step 1, since 
-                        we have no step 0, instead the correctness should reflect if I correctly understood the answer.
-                        Is the current step  computationally correct in condition of provided variables and formulas?. 
-                        To justify the correctness, please refer to the extracted variable and formula I provided to you.  
-                        '''),
+        # ResponseSchema(name="Step Correctness",
+        #                description='''
+        #                say [YES] if the logic is correct and the question is well-understood, otherwise [NO] .!!! If at Step 1, since 
+        #                 we have no step 0, instead the correctness should reflect if I correctly understood the answer.
+        #                 Is the current step  computationally correct in condition of provided variables and formulas?. 
+        #                 To justify the correctness, please refer to the extracted variable and formula I provided to you.  
+        #                 '''),
         ResponseSchema(name="Logic Consistency",
                        description='''
-                       say [YES] if consistent, otherwise [NO].!!! If at Step 1, since 
-                        we have no step 0, instead say [N/A]
+                       say [YES] if the logic of the provided thought process is correct and the question is well-understood, 
+                       otherwise [NO] .!!! If at Step 1, since  we have no step 0, instead the correctness should reflect if I        correctly understood the answer.
                         '''),
         ResponseSchema(name="Dependency",
                        description='''
                            Find which previous steps led to the incorrectness or inconsistency . The whole idea is to 
-                           discuss that if the current step is incorrect or inconsistent, where did the error chain start
-                           from. What previous steps are the root cause of the error. Follow the template:
-                           [[Incorrectness] <- [Incorrect Previous Steps]\n
-                           [Inconsistency] <- [Inconsistent Previous Steps]]
-                           If no incorrectness or inconsistency, simply return [N/A]
+                           discuss that if the current step is inconsistent with any of the previous steps, and if there are, What previous steps are the root cause of the error. Follow the template: 
+                           [Logical Inconsistency] <- [Inconsistent Previous Steps]]
+                           If no inconsistency, simply return [N/A]
                            '''),
     ]
     output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
@@ -274,3 +266,52 @@ def ngram_checker_agent2(subject, question, current_step, cot,extracted_var, tem
             out_put = chain.run(subject=subject,extracted_var=extracted_var,
                                 current_step=current_step, cot=cot, question=question)
     return out_put
+
+def judge_agent(subject, question, cots, model_name='gpt-4-0125-preview'):
+    # Define the system and human prompts
+    system_prompt = (
+        '''
+        You are a professional specialized in {subject}. Given three different thought process (COTs) 
+        below for the question "{question}". Please analyze these COTs and provide your assessment 
+        on which one is the most logically sound.
+        \n{format_instructions}
+        ''')
+    
+    human_prompt = "\n Here is the first COT: \n COT 1: {cot1}\n Here is the Second COT: \n COT 2: {cot2}\n Here is the Third COT:\n COT 3: {cot3} \n\nBased on your expertise, please select the COT that you believe is the most logically correct.\n"
+
+    # Define response schemas
+    response_schemas = [
+        ResponseSchema(name="Selected COT",
+                       description='''
+                        Indicates the most logically correct Chain of Thought (COT) selected by the expert.
+                        Please provide the index of the most correct COT, (output 1 if the first chain of thought most makes sense,
+                        2 if the second chain of thought most makes sense, and 3 if the third chain of thought most makes sense.
+                        If none of the chain makes sense, simply output None)
+                        '''
+                      )
+    ]
+
+    # Initialize a structured output parser
+    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
+
+    # Initialize a dictionary to store the judged cots
+    judged_cots = None
+
+    # Iterate over the cots
+    cot1,cot2,cot3 = cots[0],cots[1],cots[2]
+    success = False
+    while not success:
+        try:
+            # Initialize a ChatModelWorker
+            worker = ChatModelWorker(output_parser=output_parser, model=model_name)
+            chain = worker.chain_generator(system_prompt, human_prompt)
+            # Run the chain
+            output = chain.run(subject=subject, cot1=cot1, cot2=cot2, cot3=cot3, question=question)
+            # Store the judged cot
+            judged_cot = output_repraser(output)['Selected COT']
+            success = True
+        except Exception as e:
+            print("Error:", e)
+            continue
+    
+    return judged_cot
