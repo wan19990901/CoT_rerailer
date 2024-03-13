@@ -41,11 +41,12 @@ def output_repraser(input_string):
     data_dict = json.loads(json_str)
     return data_dict
 
-
+#gpt-4-0125-preview,gpt-3.5-turbo-0125
 def cot_agent(subject, question, temp=0, model_name='gpt-3.5-turbo-0125'):
     system_prompt = (
         "You are a professional specialized in {subject}. You need to help me answer the given question."
-        "Notice that you need to solve the question step by step. Do not jump to the answer directly."
+        "Notice that you need to solve the question step by step and as detailed as possible. Do not jump to the answer directly."
+        "If it is a math question, please provide me the  detailed calculation in your steps, not just say the method!!!"
         "Your intermediate steps and thoughts are critical!. Also, maximum 10 steps allowed"
         "\n{format_instructions}")
     human_prompt = "{question}"
@@ -77,14 +78,14 @@ def cot_agent(subject, question, temp=0, model_name='gpt-3.5-turbo-0125'):
     return out_put
 
 
-def ngram_checker_agent(subject, question, current_step, cot, final_answer, temp=0, model_name='gpt-4-0125-preview'):
+def ngram_checker_agent(subject, question, current_step, cot, temp=0, model_name='gpt-4-0125-preview'):
     system_prompt = (
         '''You are a professional specialized in {subject}. You need to help me verify my steps when I solve the question.
         I am currently at step #{current_step}.
 
         Is the current step logically or computationally correct in condition of all previous steps?. Notice that you should follow my throught process
         and determine the correctness using my approach.Also, if it involves equation computation, any format of equation should be considered as CORRECT
-        as long as it holds. If my equation is slightly different than yours but result in correct computational result. It should be considered as CORRECT. 
+        as long as it holds. If my equation is slightly different than yours but if the result in correct computational result. It should be considered as CORRECT. 
 
         If it is correct, then verify that if my current step make the previous step hold. In other words, 
         check the logic consistency of step n in conditional of <step k to step n-1> where n is my current step and k is the first step number in the provided cot steps.
@@ -275,4 +276,183 @@ def ngram_checker_agent2(subject, question, current_step, cot,extracted_var, tem
             chain = worker.chain_generator(system_prompt, human_prompt)
             out_put = chain.run(subject=subject,extracted_var=extracted_var,
                                 current_step=current_step, cot=cot, question=question)
+    return out_put
+
+
+def root_checker_agent(subject, question, current_step, cot, temp=0, model_name='gpt-4-0125-preview'):
+    system_prompt = (
+        '''You are a professional specialized in {subject}. You need to help me verify my steps when I solve the question.
+        I am currently at step #{current_step}.
+        
+        Before you perform the task, I want you to keep in mind several definitions for my possible mistakes. 
+        1. Factuality： This type of error emphasizes the discrepancy between generated content and verifable real-word facts, including
+        factual inconsistency or fabrication. In mathematics for instance, it may represents the computational error.
+        
+        2. Faithfulness: This type of error refers to the divergence of my step analysis from the original question or 
+        previous steps, as well as self-consistency within my steps. In mathematics for instance, it may represents that
+        I understood the question wrongly or my proposed step is inconsistent with my previous step. 
+        
+        Based on my current step response, question, previous steps, and my error definitions, help me verify if any of 
+        the mistakes (factuality or faithfulness) occur on my analysis. Notice that skipping step should not be considered
+        as error as long as the calculation is correct! For instance, 2x+2 should be the same as 2+2x. Also
+        2x+2+3 should be the same as 2x+5
+
+    
+        At step 1, since we have no step 0, instead the factuality and faithfulness check
+         should reflect if I correctly understood the answer.
+        \n{format_instructions}
+''')
+    human_prompt = "Here is my complete thought process {cot} and this is the original question {question}"
+
+    response_schemas = [
+
+        ResponseSchema(name="Verification",
+                       description='''
+                        Help me verify the factuality and the faithfulness  of the current step, 
+                       and tell me the reason. 
+                       REASON is important. The reasoning step should cite the variable and formula you use!!! If at Step 1, since 
+                        we have no step 0, verify if I correctly understood the answer
+                        '''),
+
+        ResponseSchema(name="Step Hallucination",
+                       description='''
+                       say [YES] if the current step logic and computation are NOT factual or faithful 
+                       based on the question and my previous steps, otherwise [NO] .!!! If at Step 1, since 
+                        we have no step 0, check for the factuality and faithfulness of the current step only. 
+                        '''),
+        ResponseSchema(name="Type of Hallucination",
+                       description='''
+                       Identify if the step violated factuality or faithfulness or both. Return [None] if my current step
+                       was correct.
+                        '''),
+        ResponseSchema(name="Correction",
+                       description='''
+                               If you think Step Hallucination is Yes, help me generate a corrected version of the current
+                               step instead. Notice that do not simply identify the error here, instead
+                               you should directly give me the correct version with calculation (if applicable)
+                               Follow the format:
+                               Step n : [Corrected version]                               
+                               '''),
+        ResponseSchema(name="Dependency",
+                       description='''
+                           Find which previous steps led to the unfactual or unfaithful . The whole idea is to 
+                           discuss that if the current step is unfactual or unfaithful, where did the error chain start
+                           from. What previous steps are the root cause of the error. Follow the template:
+                           [[Unfactual] <- [Unfactual Previous Steps Indices]\n
+                           [Unfaithful] <- [Unfaithful Previous Steps Indices]]
+                           If it is caused by misunderstanding of question, then the dependency should be [Original Question]
+                           If no unfactual or unfaithful, simply return [N/A]
+                           '''),
+    ]
+    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
+    success = False
+    while not success:
+        try:
+            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
+            chain = worker.chain_generator(system_prompt, human_prompt)
+            out_put = chain.run(subject=subject,
+                                current_step=current_step, cot=cot,  question=question)
+
+            success = True
+        except:
+            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
+            chain = worker.chain_generator(system_prompt, human_prompt)
+            out_put = chain.run(subject=subject,
+                                current_step=current_step, cot=cot, question=question)
+    return out_put
+
+
+def debate_agent(subject, question, current_step, cot, response ,temp=0, model_name='gpt-4-0125-preview'):
+    system_prompt = (
+        '''You are a professional specialized in {subject}. You need to help me verify my steps when I solve the question.
+        I am currently at step #{current_step}.
+
+        Before you perform the task, I want you to keep in mind several definitions for my possible mistakes. 
+        1. Factuality： This type of error emphasizes the discrepancy between generated content and verifable real-word facts, including
+        factual inconsistency or fabrication. In mathematics for instance, it may represents the computational error.
+
+        2. Faithfulness: This type of error refers to the divergence of my step analysis from the original question or 
+        previous steps, as well as self-consistency within my steps. In mathematics for instance, it may represents that
+        I understood the question wrongly or my proposed step is inconsistent with my previous step. 
+
+        Other agents had helped me identify the error I made in the current step. You goal is to debate with the other
+        agents and justify if their corrections were correct based on my question, thought process. Please use Critical
+        Thinking. Please be harsh and picky since your verification is important!
+        \n{format_instructions}
+''')
+    human_prompt = ("Here is my complete thought process {cot} and this is the original question {question}. The full"
+                    "response from the other agents were given as {response}")
+
+    response_schemas = [
+
+        ResponseSchema(name="Justification",
+                       description='''
+                        Give me the reason that whether you think the other agents' correction to my step was correct.
+                        '''),
+
+        ResponseSchema(name="Agreement",
+                       description='''
+                       say [YES] if you agree with the other agents corrections to my current step analysis. Otherwise,
+                       say [NO]
+                        '''),
+
+        ResponseSchema(name="Correction",
+                       description='''
+                               Help me generate a  version of the current
+                               step that you think is correct
+                               . Notice that do not simply identify the error here, instead
+                               you should directly give me the correct version with calculation (if applicable)
+                               
+                               Step n : [Corrected version]                               
+                               '''),
+    ]
+    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
+    success = False
+    while not success:
+        try:
+            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
+            chain = worker.chain_generator(system_prompt, human_prompt)
+            out_put = chain.run(subject=subject,
+                                current_step=current_step, cot=cot, question=question, response = response)
+
+            success = True
+        except:
+            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
+            chain = worker.chain_generator(system_prompt, human_prompt)
+            out_put = chain.run(subject=subject,
+                                current_step=current_step, cot=cot, question=question, response = response1)
+    return out_put
+
+def correct_answer_agent(subject, cot,question, temp=0, model_name='gpt-4-0125-preview'):
+    system_prompt = (
+        '''
+        You are a professional specialized in {subject}. Your task is help me summarize my thought process towards a 
+        question, then help me return the final answer to the question based on my thought process.
+        \n{format_instructions}
+        ''')
+    human_prompt = "Here is my question :{question}. And my thought process is given as {cot}"
+
+    response_schemas = [
+        ResponseSchema(name="Summarization",
+                       description="Summarize my thought process"),
+        ResponseSchema(name="Final Answer",
+                       description="Give me your final answer based on my thought process , if have options provided, "
+                                   "just give me the option index. Follow"
+                                   "The format [final_answer or correct_option_index]")
+    ]
+    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
+    success = False
+    while not success:
+        try:
+            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
+            chain = worker.chain_generator(system_prompt, human_prompt)
+            out_put = chain.run(subject=subject, cot = cot,
+                                question=question)
+
+            success = True
+        except:
+            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
+            chain = worker.chain_generator(system_prompt, human_prompt)
+            out_put = chain.run(subject=subject, cot = cot,
+                                question=question)
     return out_put
