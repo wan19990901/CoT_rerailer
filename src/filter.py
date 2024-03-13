@@ -9,8 +9,11 @@ def load_data(data_dir):
     df_mmlu = pd.read_csv(os.path.join(data_dir, 'MMLU_test.csv'))
     return df_self_check, df_mmlu
 
-def preprocess_samples(df_self_check, df_mmlu, sample_size=1):
+def preprocess_samples(df_self_check, df_mmlu, sample_size=1, random_seed=42):
     """Preprocess samples by choosing random samples and concatenating them."""
+    if random_seed is not None:
+        np.random.seed(random_seed)
+    
     sample_self_check = df_self_check.sample(sample_size)
     sample_mmlu = df_mmlu.sample(sample_size)
     return pd.concat([sample_self_check, sample_mmlu])
