@@ -40,7 +40,7 @@ def generate_cot_response(subject, question):
     cot, steps, final_answer = forward_result.values()
     return cot, steps, final_answer
 def generate_new_response(subject, question,cot):
-    result = correct_answer_agent_partial_cot(subject=subject, question=question,cot=cot)
+    result = correct_answer_agent(subject=subject, question=question,cot=cot)
     success = False
     while not success:
         try:
@@ -81,29 +81,20 @@ def self_correct_complete(cot, steps, question, ngram=1):
             print('Old Version: ', masked_cot[i])
             masked_cot[i] = debate_response['Correction']
             print('Corrected Version', masked_cot[i])
-            break
+
     print('------------------------------------------------------')
-    print(masked_cot)
+    print(check_list)
     print('------------------------------------------------------')
     print(f'The ground truth answer should be: {correct_answer}')
 
     return check_list, masked_cot
-
-
-def standardize_answer(answer):
-    # Check for strict multiple choice format (single letter or letter followed by parenthesis)
-    if re.match(r'^[a-zA-Z]\)?$', answer.strip()):
-        return answer.strip().lower()[0]
-
-    # For other cases, return the answer as is
-    return answer
 
 def multi_agents_debate(subject,current_step,masked_cot,question,response):
     final_response = response
     print('Start Debating')
     attempts = 0
     counter = 0
-    while (attempts < 1) and counter <=2:
+    while (attempts < 2) and counter <=4:
         print('attempt:',attempts)
         success = False
         while not success:
@@ -175,7 +166,7 @@ if __name__ == '__main__':
 
         result_df_dict['CaseID'].append(row_idx)
         result_df_dict['Question'].append(question)
-        result_df_dict['Correct Answer'].append(standardize_answer(correct_answer))
+        result_df_dict['Correct Answer'].append(correct_answer)
         result_df_dict['raw_cot'].append(cot)
 
         print('question: ',question)
@@ -183,7 +174,7 @@ if __name__ == '__main__':
         print('COT: ',cot)
         print('raw_cot_answer: ',raw_cot_answer)
 
-        result_df_dict['Raw COT Answer'].append(standardize_answer(raw_cot_answer))
+        result_df_dict['Raw COT Answer'].append(raw_cot_answer)
         matches = re.findall(r'(?i)([Ss]tep \d+\s?:)', cot)
 
         # Split the string into steps without removing the "step n:" part
@@ -197,13 +188,13 @@ if __name__ == '__main__':
 
         multi_checker = []
         for i in range(config['num_agents']):
-            check_list,partial_cot = self_correct_complete(result_steps, steps, question=question,
+            check_list,corrected_cot = self_correct_complete(result_steps, steps, question=question,
                                                      ngram=config['ngram'])
             if 'YES' in check_list:
-                corrected_cot, corrected_answer = generate_new_response(subject=subject,question=question,cot=partial_cot)
-                result_df_dict['Corrected COT Answer'].append(standardize_answer(corrected_answer))
+                _, corrected_answer = generate_new_response(subject=subject,question=question,cot=corrected_cot[:-1])
+                result_df_dict['Corrected COT Answer'].append(corrected_answer)
             else:
-                result_df_dict['Corrected COT Answer'].append(standardize_answer(raw_cot_answer))
+                result_df_dict['Corrected COT Answer'].append(raw_cot_answer)
             multi_checker.append(check_list)
 
         for index, content in enumerate(multi_checker):
@@ -215,4 +206,4 @@ if __name__ == '__main__':
         result_df_dict['Hallu Seq'].append(check_list)
 
     result_df = pd.DataFrame.from_dict(result_df_dict)
-    result_df.to_csv('../result/error_analysis_partial_cot_1attempt.csv')
+    result_df.to_csv('../result/error_analysis_2attempt.csv')
