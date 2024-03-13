@@ -92,11 +92,11 @@ def self_correct_complete(cot, steps, question, ngram=1):
 
 def standardize_answer(answer):
     # Check for strict multiple choice format (single letter or letter followed by parenthesis)
-    if re.match(r'^[a-zA-Z]\)?$', answer.strip()):
+    if re.match(r'^[a-zA-Z]\W.*$', answer.strip()):
         return answer.strip().lower()[0]
 
     # For other cases, return the answer as is
-    return answer
+    return answer.lower()
 
 def multi_agents_debate(subject,current_step,masked_cot,question,response):
     final_response = response
