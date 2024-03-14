@@ -68,13 +68,10 @@ def cot_agent(subject, question, temp=0, model_name='gpt-3.5-turbo-0125'):
             chain = worker.chain_generator(system_prompt, human_prompt)
             out_put = chain.run(subject=subject,
                                 question=question)
-
+            output = output_repraser(output)
             success = True
         except:
-            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
-            chain = worker.chain_generator(system_prompt, human_prompt)
-            out_put = chain.run(subject=subject,
-                                question=question)
+            continue
     return out_put
 
 
@@ -135,12 +132,10 @@ def ngram_checker_agent(subject, question, current_step, cot, temp=0, model_name
             out_put = chain.run(subject=subject,
                                 current_step=current_step, cot=cot, final_answer=final_answer, question=question)
 
+            output = output_repraser(output)
             success = True
         except:
-            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
-            chain = worker.chain_generator(system_prompt, human_prompt)
-            out_put = chain.run(subject=subject,
-                                current_step=current_step, cot=cot, final_answer=final_answer, question=question)
+            continue
     return out_put
 
 
@@ -197,12 +192,10 @@ def variable_agent(subject, question, cot,current_step,previous_variables ,temp=
             out_put = chain.run(subject=subject, cot = cot, current_step = current_step,previous_variables=previous_variables,
                                 question=question)
 
+            output = output_repraser(output)
             success = True
         except:
-            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
-            chain = worker.chain_generator(system_prompt, human_prompt)
-            out_put = chain.run(subject=subject, cot = cot, current_step = current_step,previous_variables=previous_variables,
-                                question=question)
+            continue
     return out_put
 
 def ngram_checker_agent2(subject, question, current_step, cot,extracted_var, temp=0, model_name='gpt-4-0125-preview'):
@@ -270,12 +263,10 @@ def ngram_checker_agent2(subject, question, current_step, cot,extracted_var, tem
             out_put = chain.run(subject=subject, extracted_var=extracted_var,
                                 current_step=current_step, cot=cot,  question=question)
 
+            output = output_repraser(output)
             success = True
         except:
-            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
-            chain = worker.chain_generator(system_prompt, human_prompt)
-            out_put = chain.run(subject=subject,extracted_var=extracted_var,
-                                current_step=current_step, cot=cot, question=question)
+            continue
     return out_put
 
 
@@ -353,12 +344,10 @@ def root_checker_agent(subject, question, current_step, cot, temp=0, model_name=
             out_put = chain.run(subject=subject,
                                 current_step=current_step, cot=cot,  question=question)
 
+            output = output_repraser(output)
             success = True
         except:
-            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
-            chain = worker.chain_generator(system_prompt, human_prompt)
-            out_put = chain.run(subject=subject,
-                                current_step=current_step, cot=cot, question=question)
+            continue
     return out_put
 
 
@@ -416,12 +405,10 @@ def debate_agent(subject, question, current_step, cot, response ,temp=0, model_n
             out_put = chain.run(subject=subject,
                                 current_step=current_step, cot=cot, question=question, response = response)
 
+            output = output_repraser(output)
             success = True
         except:
-            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
-            chain = worker.chain_generator(system_prompt, human_prompt)
-            out_put = chain.run(subject=subject,
-                                current_step=current_step, cot=cot, question=question, response = response1)
+            continue
     return out_put
 
 
@@ -456,12 +443,10 @@ def correct_answer_agent_partial_cot(subject, cot,question, temp=0, model_name='
             out_put = chain.run(subject=subject, cot = cot,
                                 question=question)
 
+            output = output_repraser(output)
             success = True
         except:
-            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
-            chain = worker.chain_generator(system_prompt, human_prompt)
-            out_put = chain.run(subject=subject, cot = cot,
-                                question=question)
+            continue
     return out_put
 
 
@@ -526,12 +511,10 @@ def debate_whole_agent(subject, question, cot, temp=0, model_name='gpt-4-0125-pr
             out_put = chain.run(subject=subject,
                                  cot=cot, question=question)
 
+            output = output_repraser(output)
             success = True
         except:
-            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
-            chain = worker.chain_generator(system_prompt, human_prompt)
-            out_put = chain.run(subject=subject,
-                                cot=cot, question=question)
+            continue
     return out_put
 
 def judge_agent(subject, question, cots, model_name='gpt-4-0125-preview'):
