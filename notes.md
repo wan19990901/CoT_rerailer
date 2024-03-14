@@ -16,9 +16,6 @@ https://arxiv.org/pdf/2305.15852.pdf
 
 sampling based, via self-consistency or self-contradictiton.
 
-
-
-
 2 : Do language models know when they’re hallucinating references? Indirect Asking
 3: SelfCheck: Using LLMs to Zero-Shot Check Their Own Step-by-Step Reasoning (reasoning) (https://github.com/NingMiao/SelfCheck)
 4:  Chatgpt as a factual inconsistency evaluator for text summarization
@@ -57,16 +54,6 @@ Encouraging Divergent Thinking in Large Language Models through Multi-Agent Deba
 
 https://arxiv.org/abs/2305.19118
 
-Counterfactuals:
-
-Do Models Explain Themselves?
-Counterfactual Simulatability of Natural Language Explanations
-https://arxiv.org/pdf/2307.08678.pdf
-
-
-FAITHFUL EXPLANATIONS OF BLACK-BOX NLP MODELS USING LLM-GENERATED COUNTERFACTUALS
-
-https://arxiv.org/pdf/2310.00603.pdf
 
 
 
@@ -85,6 +72,11 @@ We proposed a method to explain the most hallcinated output and compared it with
 
 
 (A implies B implies C != C implies B implies A)
+
+
+## Paper Notes
+
+
 
 
 
