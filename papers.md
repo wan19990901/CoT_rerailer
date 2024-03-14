@@ -1,6 +1,6 @@
-# KG-LLM-CA-Papers
+# LLM Papers
 
-This markdown collects papers related to **LLM Hallucination**,  **LLM Interpretability**, **LLM Agent**, and **LLM and Counterfactual Reasonings**.
+This markdown collects papers related to **LLM Hallucination** and **LLM Agent** and some  **LLM Explanability** 
 
    
 ## Content
@@ -15,8 +15,6 @@ This markdown collects papers related to **LLM Hallucination**,  **LLM Interpret
     - [Methods](#methods)
     - [Resources](#resources)
   - [LLM Agent](#llm-and-ag)
-    - [Related Methods](#methods)
-  - [LLM and CounterFactualReasoning](#llm-and-cf)
     - [Related Methods](#methods)
 
 ## Papers
