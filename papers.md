@@ -36,29 +36,29 @@ This markdown collects papers related to **LLM Hallucination**,  **LLM Interpret
 
 #### Source of Hallucination
 
-- \[[arxiv] (https://arxiv.org/abs/2401.11817)\] Hallucination is Inevitable: An Innate Limitation of Large Language Models. `2024.1`
+- \[[arxiv](https://arxiv.org/abs/2401.11817)\] Hallucination is Inevitable: An Innate Limitation of Large Language Models. `2024.1`
 
-- \[[arxiv] (https://arxiv.org/abs/2309.13007)\] Why Does ChatGPT Fall Short in Providing Truthful Answers? `2023.12`
+- \[[arxiv](https://arxiv.org/abs/2309.13007)\] Why Does ChatGPT Fall Short in Providing Truthful Answers? `2023.12`
 
-- \[[arxiv] (https://arxiv.org/abs/2305.14552)\] Sources of Hallucination by Large Language Models on Inference Tasks `2023.10`
+- \[[arxiv](https://arxiv.org/abs/2305.14552)\] Sources of Hallucination by Large Language Models on Inference Tasks `2023.10`
 
 #### Related Methods
 
 
-- \[[arxiv] (https://arxiv.org/abs/2308.07758)\] Forward-Backward Reasoning in Large Language Models for Mathematical Verification. `2024.2`
-- \[[arxiv] (https://arxiv.org/abs/2311.09277)\] Contrastive Chain-of-Thought Prompting `2023.11`
-- \[[arxiv] (https://arxiv.org/abs/2306.03872)\] Deductive Verification of Chain-of-Thought Reasoning `2023.10`
-- \[[arxiv] (https://arxiv.org/abs/2212.09561)\] Large Language Models are Better Reasoners with Self-Verification `2023.10`
-- \[[arxiv] (https://arxiv.org/abs/2308.00436)\] SelfCheck: Using LLMs to Zero-Shot Check Their Own Step-by-Step Reasoning `2023.10`
-- \[[arxiv] (https://arxiv.org/abs/2310.03951)\] Chain of Natural Language Inference for Reducing Large Language Model Ungrounded Hallucinations `2023.10`
-- \[[arxiv] (https://arxiv.org/abs/2303.08896)\] SelfCheckGPT: Zero-Resource Black-Box Hallucination Detection for Generative Large Language Models `2023.10`
-- \[[arxiv] (https://arxiv.org/abs/2305.11747)\] HaluEval: A Large-Scale Hallucination Evaluation Benchmark for Large Language Models `2023.10`
+- \[[arxiv](https://arxiv.org/abs/2308.07758)\] Forward-Backward Reasoning in Large Language Models for Mathematical Verification. `2024.2`
+- \[[arxiv](https://arxiv.org/abs/2311.09277)\] Contrastive Chain-of-Thought Prompting `2023.11`
+- \[[arxiv](https://arxiv.org/abs/2306.03872)\] Deductive Verification of Chain-of-Thought Reasoning `2023.10`
+- \[[arxiv](https://arxiv.org/abs/2212.09561)\] Large Language Models are Better Reasoners with Self-Verification `2023.10`
+- \[[arxiv](https://arxiv.org/abs/2308.00436)\] SelfCheck: Using LLMs to Zero-Shot Check Their Own Step-by-Step Reasoning `2023.10`
+- \[[arxiv](https://arxiv.org/abs/2310.03951)\] Chain of Natural Language Inference for Reducing Large Language Model Ungrounded Hallucinations `2023.10`
+- \[[arxiv](https://arxiv.org/abs/2303.08896)\] SelfCheckGPT: Zero-Resource Black-Box Hallucination Detection for Generative Large Language Models `2023.10`
+- \[[arxiv](https://arxiv.org/abs/2305.11747)\] HaluEval: A Large-Scale Hallucination Evaluation Benchmark for Large Language Models `2023.10`
 
-- \[[arxiv] (https://arxiv.org/abs/2305.15852)\] Self-contradictory Hallucinations of Large Language Models: Evaluation, Detection and Mitigation `2023.10`
-- \[[arxiv] (https://arxiv.org/abs/2309.11495)\] CHAIN-OF-VERIFICATION REDUCES HALLUCINATION IN LARGE LANGUAGE MODELS `2023.9`
-- \[[arxiv] (https://arxiv.org/abs/2305.13281)\] LM vs LM: Detecting Factual Errors via Cross Examination `2023.5`
+- \[[arxiv](https://arxiv.org/abs/2305.15852)\] Self-contradictory Hallucinations of Large Language Models: Evaluation, Detection and Mitigation `2023.10`
+- \[[arxiv](https://arxiv.org/abs/2309.11495)\] CHAIN-OF-VERIFICATION REDUCES HALLUCINATION IN LARGE LANGUAGE MODELS `2023.9`
+- \[[arxiv](https://arxiv.org/abs/2305.13281)\] LM vs LM: Detecting Factual Errors via Cross Examination `2023.5`
 https://dl.acm.org/doi/10.1145/3583780.3614905 
-- \[[arxiv] (https://arxiv.org/abs/2206.14858)\] Solving Quantitative Reasoning Problems with Language Models `2022.6`
+- \[[arxiv](https://arxiv.org/abs/2206.14858)\] Solving Quantitative Reasoning Problems with Language Models `2022.6`
 
 
 ### LLM Agents Reasonings
