@@ -14,31 +14,8 @@ def load_df(dataset_fp):
     return df
 
 
-def select_sample(df, test_case_number=0):
-    test_sample = df.iloc[test_case_number]
-    print(f'\nSample {test_case_number} Question:')
-    print(test_sample.Question)
-    print(f'\nSample {test_case_number} Correct Answer:')
-    print(test_sample['Correct Answer'])
-    print('------------------------------------------------------')
-    return test_sample
 
 
-def generate_cot_response(subject, question):
-    result = cot_agent(subject=subject, question=question)
-    success = False
-    while not success:
-        try:
-            forward_result = output_repraser(result)
-            success = True
-        except:
-            success = False
-    for key, value in forward_result.items():
-        print(key)
-        print(value)
-    print('------------------------------------------------------')
-    cot, steps, final_answer = forward_result.values()
-    return cot, steps, final_answer
 def generate_new_response(subject, question,cot):
     result = correct_answer_agent_partial_cot(subject=subject, question=question,cot=cot)
     success = False
@@ -123,23 +100,7 @@ def multi_agents_debate(subject,current_step,masked_cot,question,response):
     return final_response
 
 
-def majority_vote(checker_seq_list):
 
-    # Majority vote for each tuple position
-    majority_vote = []
-    for i in range(len(checker_seq_list[0])):
-        # Get the i-th element from each list and count occurrences
-        ith_elements = [lst[i] for lst in checker_seq_list]
-        # Count occurrences of each answer for both elements in the tuple
-        count_first = Counter([elem[0] for elem in ith_elements])
-        count_second = Counter([elem[1] for elem in ith_elements])
-        # Get the most common element with majority vote
-        majority_first = count_first.most_common(1)[0][0]
-        majority_second = count_second.most_common(1)[0][0]
-        # Add the majority vote tuple to the result list
-        majority_vote.append((majority_first, majority_second))
-
-    return majority_vote
 
 
 if __name__ == '__main__':
@@ -161,7 +122,7 @@ if __name__ == '__main__':
         'corrected_cot': []
     }
 
-    df = pd.read_csv('../data/3-12_data.csv')
+    df = pd.read_csv('../data/3-17_data.csv')
 
     for row_idx in range(len(df)):
         row = df.iloc[row_idx]
@@ -184,18 +145,18 @@ if __name__ == '__main__':
         print('raw_cot_answer: ',raw_cot_answer)
 
         result_df_dict['Raw COT Answer'].append(standardize_answer(raw_cot_answer))
-        matches = re.findall(r'(?i)([Ss]tep \d+\s?:)', cot)
 
-        # Split the string into steps without removing the "step n:" part
+
         steps_list_with_indices = re.split(r'(?i)([Ss]tep \d+\s?:)', cot)
 
         # Reconstruct the steps list to include "step n:" with the actual step text.
         result_steps = [f"{steps_list_with_indices[i]} {steps_list_with_indices[i + 1].strip()}" for i in
                         range(1, len(steps_list_with_indices), 2)]
+        if len(result_steps) == 0:
+            result_steps = ['No initial thoughts proposed, start from the scratch']
 
         steps =  len(result_steps)
 
-        multi_checker = []
         for i in range(config['num_agents']):
             check_list,partial_cot = self_correct_complete(result_steps, steps, question=question,
                                                      ngram=config['ngram'])
@@ -204,15 +165,11 @@ if __name__ == '__main__':
                 result_df_dict['Corrected COT Answer'].append(standardize_answer(corrected_answer))
             else:
                 result_df_dict['Corrected COT Answer'].append(standardize_answer(raw_cot_answer))
-            multi_checker.append(check_list)
+                corrected_cot = cot
 
-        for index, content in enumerate(multi_checker):
-            print(f'{index}: {content}')
 
-        majority_vote_list = majority_vote(multi_checker)
-        # print('\n\nMajority Vote: ', majority_vote_list)
         result_df_dict['corrected_cot'].append(corrected_cot)
         result_df_dict['Hallu Seq'].append(check_list)
 
     result_df = pd.DataFrame.from_dict(result_df_dict)
-    result_df.to_csv('../result/error_analysis_partial_cot_1attempt.csv')
+    result_df.to_csv('../result/error_analysis_partial_cot_1attempt_315.csv')
