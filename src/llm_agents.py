@@ -38,8 +38,14 @@ class ChatModelWorker:
 def output_repraser(input_string):
     json_str = input_string.strip('```json\n').rstrip('\n```').strip()
 
-    # Step 2: Parse the JSON string into a dictionary
-    data_dict = json.loads(json_str)
+    # Create a custom JSONDecoder to handle invalid escape sequences
+    class CustomJSONDecoder(json.JSONDecoder):
+        def decode(self, s):
+            result = super().decode(s)
+            return result
+
+    # Use the custom JSONDecoder to parse the JSON string
+    data_dict = json.loads(json_str, cls=CustomJSONDecoder)
     return data_dict
 
 #gpt-4-0125-preview,gpt-3.5-turbo-0125

@@ -122,8 +122,8 @@ if __name__ == '__main__':
         'corrected_cot': []
     }
 
-    df = pd.read_csv('../data/3-17_data.csv')
-
+    df_raw = pd.read_csv('../data/3-17_data.csv')
+    df = df_raw.loc[df_raw.Consistency == False]
     for row_idx in range(len(df)):
         row = df.iloc[row_idx]
 
@@ -172,4 +172,4 @@ if __name__ == '__main__':
         result_df_dict['Hallu Seq'].append(check_list)
 
     result_df = pd.DataFrame.from_dict(result_df_dict)
-    result_df.to_csv('../result/error_analysis_partial_cot_1attempt_315.csv')
+    result_df.to_csv('../result/gpt-3-17.csv')
