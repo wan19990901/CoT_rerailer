@@ -25,6 +25,7 @@ def generate_new_response(subject, question,cot):
             success = True
         except:
             success = False
+    print('------------------------------------------------------')
     for key, value in forward_result.items():
         print(key)
         print(value)
@@ -62,7 +63,6 @@ def self_correct_complete(cot, steps, question, ngram=1):
     print('------------------------------------------------------')
     print(masked_cot)
     print('------------------------------------------------------')
-    print(f'The ground truth answer should be: {correct_answer}')
 
     return check_list, masked_cot
 
@@ -108,7 +108,7 @@ if __name__ == '__main__':
         'dataset_fp': 'Self_Check.csv',
         'test_case_number': range(0,146),
         'ngram': 'all',
-        'num_agents': 1
+        'num_agents': 3
     }
 
     result_df_dict = {
@@ -146,30 +146,32 @@ if __name__ == '__main__':
 
         result_df_dict['Raw COT Answer'].append(standardize_answer(raw_cot_answer))
 
-
-        steps_list_with_indices = re.split(r'(?i)([Ss]tep \d+\s?:)', cot)
-
-        # Reconstruct the steps list to include "step n:" with the actual step text.
-        result_steps = [f"{steps_list_with_indices[i]} {steps_list_with_indices[i + 1].strip()}" for i in
-                        range(1, len(steps_list_with_indices), 2)]
-        if len(result_steps) == 0:
-            result_steps = ['No initial thoughts proposed, start from the scratch']
-
-        steps =  len(result_steps)
-
         for i in range(config['num_agents']):
+            steps_list_with_indices = re.split(r'(?i)([Ss]tep \d+\s?:)', cot)
+
+            # Reconstruct the steps list to include "step n:" with the actual step text.
+            result_steps = [f"{steps_list_with_indices[i]} {steps_list_with_indices[i + 1].strip()}" for i in
+                            range(1, len(steps_list_with_indices), 2)]
+            if len(result_steps) == 0:
+                result_steps = ['No initial thoughts proposed, start from the scratch']
+
+            steps =  len(result_steps)
+
+
             check_list,partial_cot = self_correct_complete(result_steps, steps, question=question,
                                                      ngram=config['ngram'])
             if 'YES' in check_list:
                 corrected_cot, corrected_answer = generate_new_response(subject=subject,question=question,cot=partial_cot)
-                result_df_dict['Corrected COT Answer'].append(standardize_answer(corrected_answer))
+                new_answer = (standardize_answer(corrected_answer))
             else:
-                result_df_dict['Corrected COT Answer'].append(standardize_answer(raw_cot_answer))
+                new_answer = (standardize_answer(raw_cot_answer))
                 corrected_cot = cot
 
+            cot = corrected_cot
 
+        result_df_dict['Corrected COT Answer'].append(new_answer)
         result_df_dict['corrected_cot'].append(corrected_cot)
         result_df_dict['Hallu Seq'].append(check_list)
 
     result_df = pd.DataFrame.from_dict(result_df_dict)
-    result_df.to_csv('../result/gpt-3-17.csv')
+    result_df.to_csv('../result/gpt-3-18.csv')

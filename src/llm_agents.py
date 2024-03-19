@@ -13,7 +13,7 @@ from dotenv.main import load_dotenv
 
 class ChatModelWorker:
     def __init__(self, output_parser, temperature=0, model='gpt-4'):
-        with open('api_key.txt', 'r') as f:
+        with open('guangya_api.txt', 'r') as f:
             apikey = f.read()
         self.chat_model = ChatOpenAI(openai_api_key=apikey, model_name=model, temperature=temperature)
         self.output_parser = output_parser
@@ -106,6 +106,13 @@ def root_checker_agent(subject, question, current_step, cot, temp=0, model_name=
 
         At step 1, since we have no step 0, instead the factuality and faithfulness check
          should reflect if I correctly understood the answer.
+         
+         Do not detect any minor hallucinations! In other words, only targeting the mistakes that contain calculation error
+         or apparent logical flaw or contradict real-world facts! If the provided step acknowledge mistake, you need to 
+         capture it and correct it.
+         
+         If you see any step ended up with *<verified>* it means it have been checked without any mistake, so just consider
+         it as correct!!!  
         \n{format_instructions}
 ''')
     human_prompt = "Here is my complete thought process {cot} and this is the original question {question}"
@@ -118,6 +125,8 @@ def root_checker_agent(subject, question, current_step, cot, temp=0, model_name=
                        and tell me the reason. 
                        REASON is important. The reasoning step should cite the variable and formula you use!!! If at Step 1, since 
                         we have no step 0, verify if I correctly understood the answer
+                        If you see any step ended up with *<verified>* it means it have been checked without any mistake, so just consider
+         it as correct!!!  
                         '''),
 
         ResponseSchema(name="Step Hallucination",
@@ -125,11 +134,15 @@ def root_checker_agent(subject, question, current_step, cot, temp=0, model_name=
                        say [YES] if the current step logic and computation are NOT factual or faithful 
                        based on the question and my previous steps, otherwise [NO] .!!! If at Step 1, since 
                         we have no step 0, check for the factuality and faithfulness of the current step only. 
+                        If you see any step ended up with *<verified>* it means it have been checked without any mistake, so just consider
+         it as correct!!!  
                         '''),
         ResponseSchema(name="Type of Hallucination",
                        description='''
                        Identify if the step violated factuality or faithfulness or both. Return [None] if my current step
                        was correct.
+                       If you see any step ended up with *<verified>* it means it have been checked without any mistake, so just consider
+         it as correct!!!  
                         '''),
         ResponseSchema(name="Correction",
                        description='''
@@ -137,7 +150,7 @@ def root_checker_agent(subject, question, current_step, cot, temp=0, model_name=
                                step instead. Notice that do not simply identify the error here, instead
                                you should directly give me the correct version with calculation (if applicable)
                                Follow the format:
-                               Step n : [Corrected version]                               
+                               'Step n : [Corrected version]'                               
                                '''),
         ResponseSchema(name="Dependency",
                        description='''
@@ -210,7 +223,7 @@ def debate_agent(subject, question, current_step, cot, response, temp=0, model_n
                                . Notice that do not simply identify the error here, instead
                                you should directly give me the correct version with calculation (if applicable)
 
-                               Step n : [Corrected version]                               
+                               'Step n : [Corrected version] *<verified>*'                                 
                                '''),
     ]
     output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
@@ -227,7 +240,7 @@ def debate_agent(subject, question, current_step, cot, response, temp=0, model_n
             worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
             chain = worker.chain_generator(system_prompt, human_prompt)
             out_put = chain.run(subject=subject,
-                                current_step=current_step, cot=cot, question=question, response=response1)
+                                current_step=current_step, cot=cot, question=question, response=response)
     return out_put
 
 
@@ -245,7 +258,7 @@ def correct_answer_agent_partial_cot(subject, cot,question, temp=0, model_name='
     response_schemas = [
         ResponseSchema(name="Complete Thought Process",
                        description="Continue my thought process in order to answer the question,"
-                                   "You must include my initial thought process as well."
+                                   "You must include my initial thought process as well and leave them as what they are"
                                    "Return the complete chain of thought by following the format:"
                                    "Step n: [step process]."),
         ResponseSchema(name="Final Answer",
