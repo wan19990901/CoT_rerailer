@@ -13,7 +13,7 @@ from dotenv.main import load_dotenv
 
 class ChatModelWorker:
     def __init__(self, output_parser, temperature=0, model='gpt-4'):
-        with open('guangya_api.txt', 'r') as f:
+        with open('api_key.txt', 'r') as f:
             apikey = f.read()
         self.chat_model = ChatOpenAI(openai_api_key=apikey, model_name=model, temperature=temperature)
         self.output_parser = output_parser
@@ -111,8 +111,8 @@ def root_checker_agent(subject, question, current_step, cot, temp=0, model_name=
          or apparent logical flaw or contradict real-world facts! If the provided step acknowledge mistake, you need to 
          capture it and correct it.
          
-         If you see any step ended up with *<verified>* it means it have been checked without any mistake, so just consider
-         it as correct!!!  
+         If you see any step ended up with '*<verified>*' it means it have been checked without any mistake, so just consider
+         it as correct and do not have to give the verification. Simply say step hallu is [NO]!!!  
         \n{format_instructions}
 ''')
     human_prompt = "Here is my complete thought process {cot} and this is the original question {question}"
@@ -125,24 +125,23 @@ def root_checker_agent(subject, question, current_step, cot, temp=0, model_name=
                        and tell me the reason. 
                        REASON is important. The reasoning step should cite the variable and formula you use!!! If at Step 1, since 
                         we have no step 0, verify if I correctly understood the answer
-                        If you see any step ended up with *<verified>* it means it have been checked without any mistake, so just consider
-         it as correct!!!  
+                        If you see any step ended up with *<verified>* it means it have been checked without any mistake, so just return 'None'!!!  
                         '''),
 
         ResponseSchema(name="Step Hallucination",
                        description='''
-                       say [YES] if the current step logic and computation are NOT factual or faithful 
-                       based on the question and my previous steps, otherwise [NO] .!!! If at Step 1, since 
+                       say 'YES' if the current step logic and computation are NOT factual or faithful 
+                       based on the question and my previous steps, otherwise 'NO' .!!! If at Step 1, since 
                         we have no step 0, check for the factuality and faithfulness of the current step only. 
                         If you see any step ended up with *<verified>* it means it have been checked without any mistake, so just consider
-         it as correct!!!  
+         it as correct and say 'NO'!!!  
                         '''),
         ResponseSchema(name="Type of Hallucination",
                        description='''
                        Identify if the step violated factuality or faithfulness or both. Return [None] if my current step
                        was correct.
                        If you see any step ended up with *<verified>* it means it have been checked without any mistake, so just consider
-         it as correct!!!  
+         it as correct without verification!!!  
                         '''),
         ResponseSchema(name="Correction",
                        description='''
@@ -196,7 +195,8 @@ def debate_agent(subject, question, current_step, cot, response, temp=0, model_n
 
         Other agents had helped me identify the error I made in the current step. You goal is to debate with the other
         agents and justify if their corrections were correct based on my question, thought process. Please use Critical
-        Thinking.
+        Thinking and only capture the significant mistake that will lead to wrong answer. Errors like different interpretation
+        should be ignored.
         \n{format_instructions}
 ''')
     human_prompt = ("Here is my complete thought process {cot} and this is the original question {question}. The full"
@@ -212,8 +212,8 @@ def debate_agent(subject, question, current_step, cot, response, temp=0, model_n
 
         ResponseSchema(name="Agreement",
                        description='''
-                       say [YES] if you agree with the other agents corrections to my current step analysis. Otherwise,
-                       say [NO]
+                       say 'YES' if you agree with the other agents corrections to my current step analysis. Otherwise,
+                       say 'NO'
                         '''),
 
         ResponseSchema(name="Correction",
@@ -253,12 +253,13 @@ def correct_answer_agent_partial_cot(subject, cot,question, temp=0, model_name='
         checked since could be trusted. Remember, your response should based on my initial thoughts!
         \n{format_instructions}
         ''')
-    human_prompt = "Here is my question :{question}. And my intial thought process is given as {cot}"
+    human_prompt = "Here is my question :{question}. And my initial thought process is given as {cot}"
 
     response_schemas = [
         ResponseSchema(name="Complete Thought Process",
                        description="Continue my thought process in order to answer the question,"
-                                   "You must include my initial thought process as well and leave them as what they are"
+                                   "You must include my initial thought process as well and leave them as the EXACT TERMS "
+                                   "provided in my initial thoughts!"
                                    "Return the complete chain of thought by following the format:"
                                    "Step n: [step process]."),
         ResponseSchema(name="Final Answer",
@@ -284,71 +285,4 @@ def correct_answer_agent_partial_cot(subject, cot,question, temp=0, model_name='
     return out_put
 
 
-def debate_whole_agent(subject, question, cot, temp=0, model_name='gpt-4-0125-preview'):
-    system_prompt = (
-        '''You are a professional specialized in {subject}. You need to help me verify the other agents' thought process 
-        when they solve the question.
 
-        Before you perform the task, I want you to keep in mind several definitions for my possible mistakes. 
-        1. Factuality： This type of error emphasizes the discrepancy between generated content and verifable real-word facts, including
-        factual inconsistency or fabrication. In mathematics for instance, it may represents the computational error.
-
-        2. Faithfulness: This type of error refers to the divergence of my step analysis from the original question or 
-        previous steps, as well as self-consistency within my steps. In mathematics for instance, it may represents that
-        I understood the question wrongly or my proposed step is inconsistent with my previous step. 
-
-        Therefore, I need you to critically debate with the other agents. Your goal is to check their thought process,
-        identify which step made mistakes and what type of hallucination were those. Then , generate your own version
-        based on your justification and their thought process. Finally, generate a log to state your updates.
-        \n{format_instructions}
-''')
-    human_prompt = ("Here is their complete thought process {cot} and this is the original question {question}. ")
-
-    response_schemas = [
-
-        ResponseSchema(name="Justification",
-                       description='''
-                        Give me the your response to the other agent and justify
-                         that whether you think the other agents' thought process to solve the question was correct.
-                        '''),
-
-        ResponseSchema(name="Step Verification",
-                       description='''
-                       State which step had problem and what type by following the format:
-                       [step n]: [Mistake type (factuality or faithfulness)]
-                        '''),
-
-        ResponseSchema(name="Corrected COT",
-                       description='''
-                               Help me generate a new version of thought process to solve the question. You should follow
-                               the format: 
-                               [Step n]: [Step process]                             
-                               '''),
-        ResponseSchema(name="Updates",
-                       description='''
-                                   Give me a log history regarding your updates by stating what you changed and what are
-                                   the new steps you proposed by following the format:
-                                   'Updated Steps': [step indices],
-                                   'New Steps': [step indices]                            
-                                   '''),
-        ResponseSchema(name="Final Answer",
-                       description="Give me your final answer based your revised thought process , if have options provided, "
-                                   "just give me the option index. Follow"
-                                   "The format [final_answer or correct_option_index]")
-    ]
-    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
-    success = False
-    while not success:
-        try:
-            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
-            chain = worker.chain_generator(system_prompt, human_prompt)
-            out_put = chain.run(subject=subject,
-                                 cot=cot, question=question)
-
-            success = True
-        except:
-            worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
-            chain = worker.chain_generator(system_prompt, human_prompt)
-            out_put = chain.run(subject=subject,
-                                cot=cot, question=question)
-    return out_put

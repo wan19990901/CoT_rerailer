@@ -33,8 +33,9 @@ def generate_new_response(subject, question,cot):
     cot, final_answer = forward_result.values()
     return cot, final_answer
 
-def self_correct_complete(cot, steps, question, ngram=1):
+def self_correct_complete(cot, steps, question):
     check_list = []
+    partial_cot = []
     for i in range(int(steps)):
         current_step = i + 1
 
@@ -57,14 +58,20 @@ def self_correct_complete(cot, steps, question, ngram=1):
         if (response['Step Hallucination'] == 'YES'):
             debate_response = multi_agents_debate(subject,current_step,masked_cot,question,response)
             print('Old Version: ', masked_cot[i])
-            masked_cot[i] = debate_response['Correction']
-            print('Corrected Version', masked_cot[i])
+            partial_cot.append(debate_response['Correction'])
+            print('Corrected Version', partial_cot[i])
+
             break
+        else:
+            if not re.search(r'\*<verified>\*', masked_cot[i]):
+                partial_cot.append(masked_cot[i] + ' *<verified>*')
+            else:
+                partial_cot.append(masked_cot[i])
     print('------------------------------------------------------')
-    print(masked_cot)
+    print(partial_cot)
     print('------------------------------------------------------')
 
-    return check_list, masked_cot
+    return check_list, partial_cot
 
 
 def standardize_answer(answer):
@@ -138,20 +145,26 @@ if __name__ == '__main__':
         result_df_dict['Question'].append(question)
         result_df_dict['Correct Answer'].append(standardize_answer(correct_answer))
         result_df_dict['raw_cot'].append(cot)
-
+        print('\n\n\n')
         print('question: ',question)
         print('correct answer: ',correct_answer)
         print('COT: ',cot)
         print('raw_cot_answer: ',raw_cot_answer)
-
+        print('\n\n\n')
         result_df_dict['Raw COT Answer'].append(standardize_answer(raw_cot_answer))
 
-        for i in range(config['num_agents']):
-            steps_list_with_indices = re.split(r'(?i)([Ss]tep \d+\s?:)', cot)
+        # for i in range(config['num_agents']):
+        has_mistake = True
+        counter = 0
+        while (has_mistake is True) and counter <5:
+            try:
+                steps_list_with_indices = re.split(r'(?i)([Ss]tep \d+\s?:)', cot)
 
-            # Reconstruct the steps list to include "step n:" with the actual step text.
-            result_steps = [f"{steps_list_with_indices[i]} {steps_list_with_indices[i + 1].strip()}" for i in
-                            range(1, len(steps_list_with_indices), 2)]
+                # Reconstruct the steps list to include "step n:" with the actual step text.
+                result_steps = [f"{steps_list_with_indices[i]} {steps_list_with_indices[i + 1].strip()}" for i in
+                                range(1, len(steps_list_with_indices), 2)]
+            except:
+                result_steps = []
             if len(result_steps) == 0:
                 result_steps = ['No initial thoughts proposed, start from the scratch']
 
@@ -159,16 +172,17 @@ if __name__ == '__main__':
 
 
             check_list,partial_cot = self_correct_complete(result_steps, steps, question=question,
-                                                     ngram=config['ngram'])
+                                                     )
             if 'YES' in check_list:
                 corrected_cot, corrected_answer = generate_new_response(subject=subject,question=question,cot=partial_cot)
                 new_answer = (standardize_answer(corrected_answer))
             else:
                 new_answer = (standardize_answer(raw_cot_answer))
                 corrected_cot = cot
+                has_mistake = False
 
             cot = corrected_cot
-
+            counter += 1
         result_df_dict['Corrected COT Answer'].append(new_answer)
         result_df_dict['corrected_cot'].append(corrected_cot)
         result_df_dict['Hallu Seq'].append(check_list)
