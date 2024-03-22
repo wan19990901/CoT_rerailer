@@ -3,7 +3,7 @@ import pandas as pd
 import re
 from collections import Counter
 from llm_agents import *
-
+from tqdm import tqdm
 PREPROCESSED_FP = '../data/preprocessed'
 
 
@@ -120,6 +120,7 @@ if __name__ == '__main__':
 
     result_df_dict = {
         'CaseID': [],
+        'Category': [],
         'Question': [],
         'Correct Answer':[],
         'Raw COT Answer':[],
@@ -129,12 +130,13 @@ if __name__ == '__main__':
         'corrected_cot': []
     }
 
-    df_raw = pd.read_csv('../data/3-17_data.csv')
+    df_raw = pd.read_csv('../data/final_test_data/result_abstract_algebra.csv')
     df = df_raw.loc[df_raw.Consistency == False]
-    for row_idx in range(len(df)):
+
+    print(f'There are {len(df)} data in total')
+    print(f'Category distribution is {Counter(df.Category.tolist())}')
+    for row_idx in tqdm(range(len(df))):
         row = df.iloc[row_idx]
-
-
         subject = row['Category']
         question = row['Question']
         correct_answer = row['Correct_Answer']
@@ -142,6 +144,7 @@ if __name__ == '__main__':
         raw_cot_answer = row['Output_Answer']
 
         result_df_dict['CaseID'].append(row_idx)
+        result_df_dict['Category'].append(subject)
         result_df_dict['Question'].append(question)
         result_df_dict['Correct Answer'].append(standardize_answer(correct_answer))
         result_df_dict['raw_cot'].append(cot)
@@ -156,6 +159,8 @@ if __name__ == '__main__':
         # for i in range(config['num_agents']):
         has_mistake = True
         counter = 0
+        new_answer = (standardize_answer(raw_cot_answer))
+        corrected_cot = cot
         while (has_mistake is True) and counter <5:
             try:
                 steps_list_with_indices = re.split(r'(?i)([Ss]tep \d+\s?:)', cot)
@@ -177,8 +182,6 @@ if __name__ == '__main__':
                 corrected_cot, corrected_answer = generate_new_response(subject=subject,question=question,cot=partial_cot)
                 new_answer = (standardize_answer(corrected_answer))
             else:
-                new_answer = (standardize_answer(raw_cot_answer))
-                corrected_cot = cot
                 has_mistake = False
 
             cot = corrected_cot
@@ -188,4 +191,4 @@ if __name__ == '__main__':
         result_df_dict['Hallu Seq'].append(check_list)
 
     result_df = pd.DataFrame.from_dict(result_df_dict)
-    result_df.to_csv('../result/gpt-3-18.csv')
+    result_df.to_csv('../result/result_abstract_algebra.csv')

@@ -136,13 +136,6 @@ def root_checker_agent(subject, question, current_step, cot, temp=0, model_name=
                         If you see any step ended up with *<verified>* it means it have been checked without any mistake, so just consider
          it as correct and say 'NO'!!!  
                         '''),
-        ResponseSchema(name="Type of Hallucination",
-                       description='''
-                       Identify if the step violated factuality or faithfulness or both. Return [None] if my current step
-                       was correct.
-                       If you see any step ended up with *<verified>* it means it have been checked without any mistake, so just consider
-         it as correct without verification!!!  
-                        '''),
         ResponseSchema(name="Correction",
                        description='''
                                If you think Step Hallucination is Yes, help me generate a corrected version of the current
