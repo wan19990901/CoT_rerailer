@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import re
 from collections import Counter
-from llm_agents import *
+from llm_agents2 import *
 from tqdm import tqdm
 PREPROCESSED_FP = '../data/preprocessed'
 
@@ -107,7 +107,14 @@ def multi_agents_debate(subject,current_step,masked_cot,question,response):
     return final_response
 
 
+log_messages = []
 
+# Function to write log messages to a file and then clear the messages
+def write_log_messages(log_messages, log_file_path, mode='a'):
+    with open(log_file_path, mode) as log_file:
+        for message in log_messages:
+            log_file.write(message + "\n")
+    log_messages.clear()
 
 
 if __name__ == '__main__':
@@ -130,7 +137,7 @@ if __name__ == '__main__':
         'corrected_cot': []
     }
 
-    df_raw = pd.read_csv('../data/final_test_data/result_Math.csv')
+    df_raw = pd.read_csv('../data/final_test_data/result_last.csv')
     df = df_raw.loc[df_raw.Consistency == False]
 
     print(f'There are {len(df)} data in total')
@@ -138,7 +145,8 @@ if __name__ == '__main__':
 
     # Add a variable to track whether the header has been written
     header_written = False
-    for row_idx in tqdm(range(59,len(df))):
+    log_file_path = '../data/final_test_data/result_last_log.txt'  # Path for the log file
+    for row_idx in tqdm(range(57,len(df))):
         row = df.iloc[row_idx]
         subject = row['Category']
         question = row['Question']
@@ -194,7 +202,7 @@ if __name__ == '__main__':
         result_df_dict['Hallu Seq'].append(check_list)
         if len(result_df_dict['CaseID']) >= 20:
             result_df = pd.DataFrame.from_dict(result_df_dict)
-            result_df.to_csv('../result/result_Math_result.csv', mode='a', header=not header_written, index=False)
+            result_df.to_csv('../result/result_last_result.csv', mode='a', header=not header_written, index=False)
             header_written = True  # Ensure header is not written again
             # Clear the buffer
             for key in result_df_dict.keys():
@@ -202,4 +210,4 @@ if __name__ == '__main__':
 
     if len(result_df_dict['CaseID']) > 0:
         result_df = pd.DataFrame.from_dict(result_df_dict)
-        result_df.to_csv('../result/result_Math_result.csv', mode='a', header=not header_written, index=False)
+        result_df.to_csv('../result/result_last_result.csv', mode='a', header=not header_written, index=False)
