@@ -17,10 +17,10 @@ def load_df(dataset_fp):
 
 
 def generate_new_response(subject, question,cot):
-    result = correct_answer_agent_partial_cot(subject=subject, question=question,cot=cot)
     success = False
     while not success:
         try:
+            result = correct_answer_agent_partial_cot(subject=subject, question=question, cot=cot)
             forward_result = output_repraser(result)
             success = True
         except:

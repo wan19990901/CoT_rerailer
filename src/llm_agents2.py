@@ -271,6 +271,7 @@ def correct_answer_agent_partial_cot(subject, cot,question, temp=0, model_name='
 
             success = True
         except:
+            print('gpt_error')
             worker = ChatModelWorker(output_parser=output_parser, temperature=temp, model=model_name)
             chain = worker.chain_generator(system_prompt, human_prompt)
             out_put = chain.run(subject=subject, cot = cot,

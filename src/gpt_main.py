@@ -17,10 +17,10 @@ def load_df(dataset_fp):
 
 
 def generate_new_response(subject, question,cot):
-    result = correct_answer_agent_partial_cot(subject=subject, question=question,cot=cot)
     success = False
     while not success:
         try:
+            result = correct_answer_agent_partial_cot(subject=subject, question=question, cot=cot)
             forward_result = output_repraser(result)
             success = True
         except:
@@ -84,6 +84,7 @@ def standardize_answer(answer):
 
 def multi_agents_debate(subject,current_step,masked_cot,question,response):
     final_response = response
+
     print('Start Debating')
     attempts = 0
     counter = 0
@@ -104,6 +105,7 @@ def multi_agents_debate(subject,current_step,masked_cot,question,response):
                 counter += 1
             except:
                 success = False
+
     return final_response
 
 
@@ -115,7 +117,7 @@ if __name__ == '__main__':
         'dataset_fp': 'Self_Check.csv',
         'test_case_number': range(0, 146),
         'ngram': 'all',
-        'num_agents': 3
+        'num_agents': 1
     }
 
     result_df_dict = {
