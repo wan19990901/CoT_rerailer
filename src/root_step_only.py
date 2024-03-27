@@ -144,7 +144,7 @@ if __name__ == '__main__':
 
     # Add a variable to track whether the header has been written
     header_written = False
-    for row_idx in tqdm(range(len(df))):
+    for row_idx in tqdm(range(55,len(df))):
         row = df.iloc[row_idx]
         subject = row['Category']
         question = row['Question']
