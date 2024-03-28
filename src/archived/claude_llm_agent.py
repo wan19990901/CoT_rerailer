@@ -235,7 +235,7 @@ if __name__ == '__main__':
         'corrected_cot': []
     }
 
-    df = pd.read_csv('../data/3-15_data.csv')
+    df = pd.read_csv('3-15_data.csv')
 
 
     row = df.iloc[0]

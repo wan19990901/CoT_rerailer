@@ -136,7 +136,7 @@ if __name__ == '__main__':
         'corrected_cot': []
     }
 
-    df = pd.read_csv('../data/final_test_data/df_final.csv')
+    df = pd.read_csv('../../data/final_test_data/df_final.csv')
     # df = df_raw.loc[df_raw.Consistency == False]
 
     print(f'There are {len(df)} data in total')
@@ -144,7 +144,7 @@ if __name__ == '__main__':
 
     # Add a variable to track whether the header has been written
     header_written = False
-    for row_idx in tqdm(range(55,len(df))):
+    for row_idx in tqdm(range(len(df))):
         row = df.iloc[row_idx]
         subject = row['Category']
         question = row['Question']

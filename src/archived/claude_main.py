@@ -114,7 +114,7 @@ if __name__ == '__main__':
         'corrected_cot': []
     }
 
-    df_raw = pd.read_csv('../data/3-17_data.csv')
+    df_raw = pd.read_csv('3-17_data.csv')
     df = df_raw.loc[df_raw.Consistency == False]
     for row_idx in range(len(df)):
         row = df.iloc[row_idx]

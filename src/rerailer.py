@@ -4,6 +4,7 @@ import re
 from collections import Counter
 from llm_agents import *
 from tqdm import tqdm
+import argparse
 PREPROCESSED_FP = '../data/preprocessed'
 
 
@@ -108,18 +109,7 @@ def multi_agents_debate(subject,current_step,masked_cot,question,response):
 
     return final_response
 
-
-
-
-
-if __name__ == '__main__':
-    config = {
-        'dataset_fp': 'Self_Check.csv',
-        'test_case_number': range(0, 146),
-        'ngram': 'all',
-        'num_agents': 1
-    }
-
+def rerailer(df, num_steps= 'MULTI'):
     result_df_dict = {
         'CaseID': [],
         'Category': [],
@@ -131,16 +121,12 @@ if __name__ == '__main__':
         'raw_cot': [],
         'corrected_cot': []
     }
-
-    df_raw = pd.read_csv('../data/final_test_data/result_Math.csv')
-    df = df_raw.loc[df_raw.Consistency == False]
-
     print(f'There are {len(df)} data in total')
     print(f'Category distribution is {Counter(df.Category.tolist())}')
 
     # Add a variable to track whether the header has been written
     header_written = False
-    for row_idx in tqdm(range(59,len(df))):
+    for row_idx in tqdm(range(len(df))):
         row = df.iloc[row_idx]
         subject = row['Category']
         question = row['Question']
@@ -154,19 +140,18 @@ if __name__ == '__main__':
         result_df_dict['Correct Answer'].append(standardize_answer(correct_answer))
         result_df_dict['raw_cot'].append(cot)
         print('\n\n\n')
-        print('question: ',question)
-        print('correct answer: ',correct_answer)
-        print('COT: ',cot)
-        print('raw_cot_answer: ',raw_cot_answer)
+        print('question: ', question)
+        print('correct answer: ', correct_answer)
+        print('COT: ', cot)
+        print('raw_cot_answer: ', raw_cot_answer)
         print('\n\n\n')
         result_df_dict['Raw COT Answer'].append(standardize_answer(raw_cot_answer))
 
-        # for i in range(config['num_agents']):
         has_mistake = True
         counter = 0
         new_answer = (standardize_answer(raw_cot_answer))
         corrected_cot = cot
-        while (has_mistake is True) and counter <5:
+        while (has_mistake is True) and counter < 5:
             try:
                 steps_list_with_indices = re.split(r'(?i)([Ss]tep \d+\s?:)', cot)
 
@@ -178,14 +163,16 @@ if __name__ == '__main__':
             if len(result_steps) == 0:
                 result_steps = ['No initial thoughts proposed, start from the scratch']
 
-            steps =  len(result_steps)
+            steps = len(result_steps)
 
-
-            check_list,partial_cot = self_correct_complete(result_steps, steps, question=question,
-                                                     )
+            check_list, partial_cot = self_correct_complete(result_steps, steps, question=question,
+                                                            )
             if 'YES' in check_list:
-                corrected_cot, corrected_answer = generate_new_response(subject=subject,question=question,cot=partial_cot)
+                corrected_cot, corrected_answer = generate_new_response(subject=subject, question=question,
+                                                                        cot=partial_cot)
                 new_answer = (standardize_answer(corrected_answer))
+                if num_steps == 'ONE':
+                    has_mistake = False
             else:
                 has_mistake = False
 
@@ -196,7 +183,7 @@ if __name__ == '__main__':
         result_df_dict['Hallu Seq'].append(check_list)
         if len(result_df_dict['CaseID']) >= 20:
             result_df = pd.DataFrame.from_dict(result_df_dict)
-            result_df.to_csv('../result/result_Math_result.csv', mode='a', header=not header_written, index=False)
+            result_df.to_csv(f'../result/rerailer_result_{num_steps}.csv', mode='a', header=not header_written, index=False)
             header_written = True  # Ensure header is not written again
             # Clear the buffer
             for key in result_df_dict.keys():
@@ -204,4 +191,16 @@ if __name__ == '__main__':
 
     if len(result_df_dict['CaseID']) > 0:
         result_df = pd.DataFrame.from_dict(result_df_dict)
-        result_df.to_csv('../result/result_Math_result.csv', mode='a', header=not header_written, index=False)
+        result_df.to_csv(f'../result/rerailer_result_{num_steps}.csv', mode='a', header=not header_written, index=False)
+
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--STEPS', type=str, required=True)
+    args = parser.parse_args()
+
+    df_raw = pd.read_csv('../data/final_test_data/result_Math.csv')
+    df = df_raw.loc[df_raw.Consistency == False]
+    rerailer(df, num_steps=args.STEPS)
+
