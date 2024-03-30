@@ -274,5 +274,54 @@ def correct_answer_agent_partial_cot(subject, cot,question, temp=0, model_name='
             print('gpt_error')
     return out_put
 
+def judge_agent(subject, question, cots, model_name='gpt-4-0125-preview'):
+    # Define the system and human prompts
+    system_prompt = (
+    '''You are a professional specialized in {subject}. 
+    A Chain of Thought (COT) is a step-by-step reasoning process used to solve a problem or answer a question. 
+    You have been presented with three different COTs below for the question "{question}". 
+    Please carefully analyze these COTs and provide your assessment on which one is the most logically sound based on the given information and your expertise in the subject. \n\n{format_instructions}'''
+    )
+
+    human_prompt = (
+    "Here are the three Chains of Thought (COTs) for your analysis: \n\n"
+    "COT 1: {cot1}\n\n"
+    "COT 2: {cot2}\n\n"
+    "COT 3: {cot3}\n\n"
+    )
+
+    # Define response schemas
+    response_schemas = [
+    ResponseSchema(
+    name="Selected COT",
+    description='''Indicates the most logically correct Chain of Thought (COT) selected by the expert. Please provide the index of the most correct COT (1, 2, or 3). If you think more than two CoTs are equally correct, please pick a short chain. If none of the chains of thought make sense, simply output 'None'.''',
+    ),
+    ]
+
+    # Initialize a structured output parser
+    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
+
+    # Initialize a dictionary to store the judged cots
+    judged_cots = None
+
+    # Iterate over the cots
+    cot1,cot2,cot3 = cots[0],cots[1],cots[2]
+    success = False
+    while not success:
+        try:
+            # Initialize a ChatModelWorker
+            worker = ChatModelWorker(output_parser=output_parser, model=model_name)
+            chain = worker.chain_generator(system_prompt, human_prompt)
+            # Run the chain
+            output = chain.run(subject=subject, cot1=cot1, cot2=cot2, cot3=cot3, question=question)
+            # Store the judged cot
+            judged_cot = output_repraser(output)['Selected COT']
+            success = True
+        except Exception as e:
+            print("Error:", e)
+            continue
+    
+    return judged_cot
+
 
 
