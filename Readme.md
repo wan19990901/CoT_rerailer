@@ -18,34 +18,6 @@ To Obtain a key, please go to openai official website and obtain an api key.
 Once the apikey is obtained, please open the file [src/api_key.txt](src/api_key.txt) and replace your API key to the 
 placeholder
 
-## Reproduction
-To run the full pipeline, run:
-
-`python src/`
-
-To test Deviation Identifier, run:
-
-`python src/`
-
-To test Rerailer with multiple steps, run:
-
-`python src/rerailer_multisteps.py`
-
-To test Rerailer with one steps, run:
-
-`python src/rerailer_onestep.py`
-
-
-
-## Try your own example
-If you want to try your own question, please follow the steps:
-
-1. Open [data/question_template.json](data/question_template.json).
-2. Enter your Question, Options, Answer, and Category in the provided field and save.
-3. Run `python src/pipeline.py --TEST True`
-
-
-
 ## Data
 * Preprocessed QA dataset are stored
 in [data/preprocessed](data/preprocessed)
