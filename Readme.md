@@ -27,7 +27,7 @@ in [data/preprocessed](data/preprocessed)
 
 
 ## References
-* MathQA dataset: 
-* GSM8K dataset:
+* MathQA dataset: https://github.com/NingMiao/SelfCheck/tree/master/data/MathQA
+* GSM8K dataset: https://github.com/NingMiao/SelfCheck/tree/master/data/GSM8K
 * MMLU dataset: https://huggingface.co/datasets/lukaemon/mmlu
 * BigBench dataset: https://huggingface.co/datasets/maveriq/bigbenchhard
