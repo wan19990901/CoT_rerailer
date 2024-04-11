@@ -1,5 +1,0 @@
-text,right_answers,hallucinated_answers,q_emb,t_emb,f_emb
-Arthur's Magazine (1844–1846) was an American literary periodical published in Philadelphia in the 19th century.First for Women is a woman's magazine published by Bauer Media Group in the USA. Which magazine was started first Arthur's Magazine or First for Women?,Arthur's Magazine,First for Women was started first.,"[ 0.0084814   0.01865907  0.00424375 ... -0.00325832  0.02443131
-  0.00569596]","[-0.0215871   0.03014048 -0.03806184 ... -0.03348318  0.02237362
- -0.00290555]","[ 0.02205172  0.02005965  0.01877794 ...  0.0107865   0.00062735
- -0.02520197]"
