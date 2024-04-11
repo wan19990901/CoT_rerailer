@@ -3,6 +3,8 @@ import pandas as pd
 from llm_agents import cot_agent, judge_agent
 from utils import check_consistency
 import numpy as np
+from tqdm import tqdm
+import re
 
 def load_data(data_dir):
     """Load data from the specified directory."""
@@ -19,14 +21,13 @@ def preprocess_samples(df, sample_size, random_seed=42):
     sample_data = pd.DataFrame()
     
     # Iterate over unique categories in the filtered DataFrame and take the first n samples
-    for category in filtered_df['Category'].unique():
-        category_samples = filtered_df[filtered_df['Category'] == category].sample(sample_size, replace=False, random_state=random_seed)
+    for category in df['Category'].unique():
+        category_samples = df[df['Category'] == category].sample(sample_size, replace=False, random_state=random_seed)
         sample_data = pd.concat([sample_data, category_samples])
     
     return sample_data
 
-from tqdm import tqdm
-import re
+
 def run_experiment(temp_df):
     # Initialize lists to store results
     categories = []
