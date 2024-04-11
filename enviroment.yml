@@ -1,0 +1,5 @@
+name: myenv
+dependencies:
+  - python=3.11.4  # Adjust based on your requirements
+  - pip:
+    - -r file:requirements.txt  # This includes your pip requirements
