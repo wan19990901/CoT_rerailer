@@ -15,11 +15,13 @@ To obtain a key, please go to the OpenAI official website and obtain an API key.
 
 ## Data
 All data is organized under the `data` folder, with subfolders for each category of data:
-- `GSM8K` and `MATHQA` datasets are located in the `Selfcheck` subfolder, as they were obtained from the SelfCheck repo.
+- `GSM8K` and `MATHQA` datasets are located in the `Selfcheck` subfolder, as they were obtained from the SelfCheck repo (https://github.com/NingMiao/SelfCheck/tree/master/data).
 - `MMLU` dataset is obtained from the Hugging Face dataset: https://huggingface.co/datasets/lukaemon/mmlu
 - `BigBench` dataset is obtained from the Hugging Face dataset: https://huggingface.co/datasets/maveriq/bigbenchhard
 
 There is also a Jupyter notebook file to preprocess the data. Once the data is processed, it is stored in the `preprocessed` subfolder to be combined and sampled.
+
+We also keep a subfolder called final_test data, which includes the results file after running the first derailing part of the pipeline, so that people are free to test our second rerailer part freely with them.
 
 ## Code
 All main code is located in the `src` folder:
