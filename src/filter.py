@@ -146,6 +146,120 @@ def run_experiment(temp_df):
 
     return category_df,debug_df
 
+
+def run_experiment_with_cot(temp_df):
+    # Initialize lists to store results
+    categories = []
+    questions = []
+    correct_answers = []
+    consistencies = []
+    selected_cots = []
+    selected_answers = []
+    confidences = []
+    cot1s = []
+    cot2s = []
+    cot3s = []
+    answer1s = []
+    answer2s = []
+    answer3s = []
+
+    current_category = temp_df['Category'].iloc[0]
+    print(current_category)
+
+    # Iterate over rows of temp_df for the specific category
+    for _, sample in tqdm(temp_df.iterrows(), total=len(temp_df), desc="Processing samples"):
+        subject = sample['Category']
+        question = sample['Question']
+        correct_answer = sample['Correct Answer']
+        cot1 = sample['cot1']
+        cot2 = sample['cot2']
+        cot3 = sample['cot3']
+        answer1 = sample['answer1']
+        answer2 = sample['answer2']
+        answer3 = sample['answer3']
+
+        answers = [answer1, answer2, answer3]
+        cots = [cot1, cot2, cot3]
+
+        consistency = check_consistency(answers)
+
+        # Update cot based on judged_cot
+        if consistency:
+            selected_cot = None  # If consistent, put NA
+            answer = answer1  # Use the first answer if consistent
+            confidences.append(100)
+        else:
+            judge_agent = LLM_agent(llm_type=llm_config['llm_type'], api_key=api_key, model=llm_config['model'],
+                                    temperature=llm_config['temperature'])
+            judge_agent.set_prompt('prompt_templates/judge.json')
+            judge_agent.set_parser(Judge)
+            arguments_dict_judge = {
+                'subject': subject,
+                'question': question,
+                'cot1': cot1,
+                'cot2': cot2,
+                'cot3': cot3,
+            }
+            judged_cot_str = judge_agent.involk(arguments_dict_judge)['Selected_COT']
+
+            print('Selected Index:', judged_cot_str)
+            if judged_cot_str != 'None':
+                selected_cot = cots[int(judged_cot_str) - 1]  # Use the selected COT index
+                answer = answers[int(judged_cot_str) - 1]
+            else:  # None selected, we will select the last one
+                selected_cot = cot3
+                answer = answer3
+
+        if subject != current_category:
+            temp_df = pd.DataFrame({
+                'Category': categories,
+                'Question': questions,
+                'Correct_Answer': correct_answers,
+                'Output_Answer': selected_answers,
+                'Consistency': consistencies,
+                'Selected_Cot': selected_cots,
+                'cot1': cot1s,
+                'cot2': cot2s,
+                'cot3': cot3s,
+                'answer1': answer1s,
+                'answer2': answer2s,
+                'answer3': answer3s,
+            })
+            temp_df.to_csv(f'result_{current_category}.csv', index=False)
+            current_category = subject
+
+        selected_answers.append(answer)
+        categories.append(subject)
+        questions.append(question)
+        correct_answers.append(correct_answer)
+        consistencies.append(consistency)
+        selected_cots.append(selected_cot)
+        cot1s.append(cot1)
+        cot2s.append(cot2)
+        cot3s.append(cot3)
+        answer1s.append(answer1)
+        answer2s.append(answer2)
+        answer3s.append(answer3)
+
+    # Construct dataframe for the specific category
+    category_df = pd.DataFrame({
+        'Category': categories,
+        'Question': questions,
+        'Correct_Answer': correct_answers,
+        'Output_Answer': selected_answers,
+        'Consistency': consistencies,
+        'Selected_Cot': selected_cots,
+        'cot1': cot1s,
+        'cot2': cot2s,
+        'cot3': cot3s,
+        'answer1': answer1s,
+        'answer2': answer2s,
+        'answer3': answer3s,
+    })
+
+    return category_df
+
+
 def save_results(final_df, debug_df):
     """Save the final and debug dataframes to CSV files."""
     final_df.to_csv('result.csv', index=False)
