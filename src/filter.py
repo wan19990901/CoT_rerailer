@@ -215,13 +215,19 @@ def run_experiment_with_cot(temp_df):
                 'cot2': cot2,
                 'cot3': cot3,
             }
-            judged_cot_str = judge_agent.involk(arguments_dict_judge)['Selected_COT']
+            try:
+                judged_cot_str = judge_agent.involk(arguments_dict_judge)['Selected_COT']
+            except:
+                print('Error in Judging; Selecting the last one')
+                selected_cot = cot3
+                answer = answer3          
 
             print('Selected Index:', judged_cot_str)
             if judged_cot_str != 'None':
                 selected_cot = cots[int(judged_cot_str) - 1]  # Use the selected COT index
                 answer = answers[int(judged_cot_str) - 1]
             else:  # None selected, we will select the last one
+                print('None selected; Selecting the last one')
                 selected_cot = cot3
                 answer = answer3
 
@@ -278,17 +284,17 @@ def run_experiment_with_cot(temp_df):
         'answer3': answer3s,
     })
 
-    return category_df,debug_df
+    return category_df
 
 
-def save_results(final_df, debug_df):
+def save_results(final_df):
     """Save the final and debug dataframes to CSV files."""
     final_df.to_csv('result_gpt4.csv', index=False)
-    debug_df.to_csv('debug_output_gpt4.csv', index=False)
+    # debug_df.to_csv('debug_output_gpt4.csv', index=False)
 
 if __name__ == '__main__':
     PREPROCESSED_FP = '../data/preprocessed'
     df = load_data(PREPROCESSED_FP,'data_gpt4.csv')
     temp_df = preprocess_samples_all(df)
-    final_df, debug_df = run_experiment_with_cot(temp_df)
-    save_results(final_df, debug_df)
+    final_df = run_experiment_with_cot(temp_df)
+    save_results(final_df)
