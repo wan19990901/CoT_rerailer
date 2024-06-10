@@ -10,7 +10,7 @@ llm_config = {
     # change these three together
     'llm_type': 'openai',  # openai, ollama, anthropic
     'api_key_link': 'api_key.txt',
-    'model': "gpt-4o",  # see llm_model.txt
+    'model': "gpt-4",  # see llm_model.txt
     'temperature': 0,
 }
 with open(llm_config['api_key_link'], 'r') as f:
@@ -283,12 +283,12 @@ def run_experiment_with_cot(temp_df):
 
 def save_results(final_df, debug_df):
     """Save the final and debug dataframes to CSV files."""
-    final_df.to_csv('result.csv', index=False)
-    debug_df.to_csv('debug_output.csv', index=False)
+    final_df.to_csv('result_gpt4.csv', index=False)
+    debug_df.to_csv('debug_output_gpt4.csv', index=False)
 
 if __name__ == '__main__':
     PREPROCESSED_FP = '../data/preprocessed'
-    df = load_data(PREPROCESSED_FP,'data_rr.csv')
+    df = load_data(PREPROCESSED_FP,'data_gpt4.csv')
     temp_df = preprocess_samples_all(df)
     final_df, debug_df = run_experiment_with_cot(temp_df)
     save_results(final_df, debug_df)
