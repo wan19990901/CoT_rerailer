@@ -16,7 +16,7 @@ llm_config = {
 with open(llm_config['api_key_link'], 'r') as f:
     api_key = f.read()
 
-def load_data(data_dir):
+def load_data(data_dir,df_name = 'filter_df.csv'):
     """Load data from the specified directory."""
     df = pd.read_csv(os.path.join(data_dir, 'filter_df.csv'))
     return df
@@ -33,6 +33,17 @@ def preprocess_samples(df, sample_size, random_seed=42):
     # Iterate over unique categories in the filtered DataFrame and take the first n samples
     for category in df['Category'].unique():
         category_samples = df[df['Category'] == category].sample(sample_size, replace=False, random_state=random_seed)
+        sample_data = pd.concat([sample_data, category_samples])
+    
+    return sample_data
+
+def preprocess_samples_all(df):
+    """Preprocess samples by concatenating all samples from each category."""
+    sample_data = pd.DataFrame()
+    
+    # Iterate over unique categories in the filtered DataFrame and take all samples
+    for category in df['Category'].unique():
+        category_samples = df[df['Category'] == category]
         sample_data = pd.concat([sample_data, category_samples])
     
     return sample_data
@@ -257,7 +268,7 @@ def run_experiment_with_cot(temp_df):
         'answer3': answer3s,
     })
 
-    return category_df
+    return category_df,debug_df
 
 
 def save_results(final_df, debug_df):
@@ -267,7 +278,7 @@ def save_results(final_df, debug_df):
 
 if __name__ == '__main__':
     PREPROCESSED_FP = '../data/preprocessed'
-    df = load_data(PREPROCESSED_FP)
-    temp_df = preprocess_samples(df,sample_size=10)
-    final_df, debug_df = run_experiment(temp_df)
+    df = load_data(PREPROCESSED_FP,'data_rr/csv')
+    temp_df = preprocess_samples_all(df)
+    final_df, debug_df = run_experiment_with_cot(temp_df)
     save_results(final_df, debug_df)
