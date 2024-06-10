@@ -97,7 +97,7 @@ def multi_agents_debate(subject,current_step,masked_cot,question,response):
     #     success = False
     #     while not success:
     #         try:
-    #             debate = debate_agent(subject=subject, current_step=current_step, cot=masked_cot,
+    #             debate = debate_agent.json(subject=subject, current_step=current_step, cot=masked_cot,
     #                                                       question=question,response = response)
     #             response = output_repraser(debate)
     #             print('\n\n\n',response,'\n\n\n')

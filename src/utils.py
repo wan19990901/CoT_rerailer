@@ -1,3 +1,4 @@
+import re
 def check_consistency(options):
     valid_options = {'A', 'B', 'C', 'D', 'E','F'}
         # Check if all options are long strings (length greater than 10)

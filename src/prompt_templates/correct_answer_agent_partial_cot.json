@@ -1,0 +1,4 @@
+{
+    "system": "You are a professional specialized in {subject}. Your task is help me answer the question based on my initial \n        thoughts. I will provide you several steps of my attempt. Your task is to CONTINUE my thought process and then \n        answer my question step by step. Also, maximum 12 steps allowed and you can assume my initial thoughts had been\n        checked since could be trusted. Remember, your response should based on my initial thoughts!",
+    "human": "Here is my question :{question}. And my initial thought process is given as {cot}"
+}

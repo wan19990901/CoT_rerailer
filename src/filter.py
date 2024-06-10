@@ -1,10 +1,20 @@
 import os
 import pandas as pd
-from llm_agents import cot_agent, judge_agent
+from llm_agents import *
+from Parsers import *
 from utils import check_consistency
 import numpy as np
 from tqdm import tqdm
 import re
+llm_config = {
+    # change these three together
+    'llm_type': 'openai',  # openai, ollama, anthropic
+    'api_key_link': 'api_key.txt',
+    'model': "gpt-4o",  # see llm_model.txt
+    'temperature': 0,
+}
+with open(llm_config['api_key_link'], 'r') as f:
+    api_key = f.read()
 
 def load_data(data_dir):
     """Load data from the specified directory."""
@@ -52,28 +62,49 @@ def run_experiment(temp_df):
         
 
         for _ in range(3):
-            result = cot_agent(model_name='gpt-4-0125-preview', subject=subject, question=question)
-            answers_debug.append(result['Final Answer'])
-            answers.append(result['Final Answer'])
-            cot_debug.append(result['Chain of Thought'])
-            results.append(result['Chain of Thought'])
+            cot_agent = LLM_agent(llm_type=llm_config['llm_type'], api_key=api_key, model=llm_config['model'],
+                                      temperature=llm_config['temperature'])
+            cot_agent.set_prompt('prompt_templates/cot_agent.json')
+            cot_agent.set_parser(CoT_Agent)
+            arguments_dict_cot = {
+                'subject': subject,
+                'question': question
+            }
+            result = cot_agent.involk(arguments_dict_cot)
+
+            answers_debug.append(result['Final_Answer'])
+            answers.append(result['Final_Answer'])
+            cot_debug.append(result['Chain_of_Thought'])
+            results.append(result['Chain_of_Thought'])
 
         consistency = check_consistency(answers)
 
         # Update cot based on judged_cot
         if consistency:
             cot = None  # If consistent, put NA
-            answer = result['Final Answer']
+            answer = result['Final_Answer']
             confidences.append(100)
         else:
-            judged_cot_str = judge_agent(subject, question, results)
+            judge_agent = LLM_agent(llm_type=llm_config['llm_type'], api_key=api_key, model=llm_config['model'],
+                                      temperature=llm_config['temperature'])
+            judge_agent.set_prompt('prompt_templates/judge.json')
+            judge_agent.set_parser(Judge)
+            arguments_dict_judge = {
+                'subject': subject,
+                'question': question,
+                'cot1':results[0],
+                'cot2': results[1],
+                'cot3': results[2],
+            }
+            judged_cot_str = judge_agent.involk(arguments_dict_judge)['Selected_COT']
+
             print('Selected Index:', judged_cot_str)
             if judged_cot_str != 'None':
                 cot = results[int(judged_cot_str) - 1]  # Use the selected COT index
                 answer = answers[int(judged_cot_str) - 1]
             else:  # None selected, we will select the last one
-                cot = result['Chain of Thought']
-                answer = result['Final Answer']
+                cot = result['Chain_of_Thought']
+                answer = result['Final_Answer']
         if(subject!=current_category):
             temp_df = pd.DataFrame({
                 'Category': categories,
@@ -122,7 +153,7 @@ def save_results(final_df, debug_df):
 
 if __name__ == '__main__':
     PREPROCESSED_FP = '../data/preprocessed'
-    df_self_check, df_mmlu = load_data(PREPROCESSED_FP)
-    temp_df = preprocess_samples(df_self_check, df_mmlu)
+    df = load_data(PREPROCESSED_FP)
+    temp_df = preprocess_samples(df,sample_size=10)
     final_df, debug_df = run_experiment(temp_df)
     save_results(final_df, debug_df)
