@@ -18,7 +18,7 @@ with open(llm_config['api_key_link'], 'r') as f:
 
 def load_data(data_dir,df_name = 'filter_df.csv'):
     """Load data from the specified directory."""
-    df = pd.read_csv(os.path.join(data_dir, 'filter_df.csv'))
+    df = pd.read_csv(os.path.join(data_dir, df_name))
     return df
 
 def preprocess_samples(df, sample_size, random_seed=42):
@@ -160,6 +160,8 @@ def run_experiment(temp_df):
 
 def run_experiment_with_cot(temp_df):
     # Initialize lists to store results
+    models = []
+    names = []
     categories = []
     questions = []
     correct_answers = []
@@ -179,6 +181,8 @@ def run_experiment_with_cot(temp_df):
 
     # Iterate over rows of temp_df for the specific category
     for _, sample in tqdm(temp_df.iterrows(), total=len(temp_df), desc="Processing samples"):
+        model = sample['Model']
+        name = sample['Name']
         subject = sample['Category']
         question = sample['Question']
         correct_answer = sample['Correct Answer']
@@ -223,6 +227,8 @@ def run_experiment_with_cot(temp_df):
 
         if subject != current_category:
             temp_df = pd.DataFrame({
+                'Model': models,
+                'Name': names,
                 'Category': categories,
                 'Question': questions,
                 'Correct_Answer': correct_answers,
@@ -239,6 +245,8 @@ def run_experiment_with_cot(temp_df):
             temp_df.to_csv(f'result_{current_category}.csv', index=False)
             current_category = subject
 
+        models.append(model)
+        names.append(name)
         selected_answers.append(answer)
         categories.append(subject)
         questions.append(question)
@@ -254,6 +262,8 @@ def run_experiment_with_cot(temp_df):
 
     # Construct dataframe for the specific category
     category_df = pd.DataFrame({
+        'Model': models,
+        'Name': names,
         'Category': categories,
         'Question': questions,
         'Correct_Answer': correct_answers,
@@ -278,7 +288,7 @@ def save_results(final_df, debug_df):
 
 if __name__ == '__main__':
     PREPROCESSED_FP = '../data/preprocessed'
-    df = load_data(PREPROCESSED_FP,'data_rr/csv')
+    df = load_data(PREPROCESSED_FP,'data_rr.csv')
     temp_df = preprocess_samples_all(df)
     final_df, debug_df = run_experiment_with_cot(temp_df)
     save_results(final_df, debug_df)
