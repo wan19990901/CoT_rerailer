@@ -7,6 +7,16 @@ from tqdm import tqdm
 import argparse
 PREPROCESSED_FP = '../data/preprocessed'
 
+llm_config = {
+    # change these three together
+    'llm_type': 'anthropic',  # openai, ollama, anthropic
+    'api_key_link': 'api_key_claude.txt',
+    'model': "claude-3-sonnet-20240229",  # see llm_model.txt
+    'temperature': 0,
+}
+
+with open(llm_config['api_key_link'], 'r') as f:
+    api_key = f.read()
 
 def load_df(dataset_fp):
     df = pd.read_csv(os.path.join(PREPROCESSED_FP, dataset_fp))
@@ -20,9 +30,19 @@ def load_df(dataset_fp):
 def generate_new_response(subject, question,cot):
     success = False
     while not success:
+
+        correct_answer_agent_partial_cot = LLM_agent(llm_type=llm_config['llm_type'], api_key=api_key, model=llm_config['model'],
+                                  temperature=llm_config['temperature'])
+        correct_answer_agent_partial_cot.set_prompt('prompt_templates/correct_answer_agent_partial_cot.json')
+        correct_answer_agent_partial_cot.set_parser(Correct_Answer_Agent_Partial_CoT)
+        arguments = {
+            'subject':subject,
+            'question':question,
+            'cot':cot
+        }
+
         try:
-            result = correct_answer_agent_partial_cot(subject=subject, question=question, cot=cot)
-            forward_result = output_repraser(result)
+            forward_result = correct_answer_agent_partial_cot.involk(arguments)
             success = True
         except:
             success = False
@@ -34,7 +54,7 @@ def generate_new_response(subject, question,cot):
     cot, final_answer = forward_result.values()
     return cot, final_answer
 
-def self_correct_complete(cot, steps, question):
+def self_correct_complete(cot, steps, question,subject):
     check_list = []
     partial_cot = []
     for i in range(int(steps)):
@@ -45,18 +65,27 @@ def self_correct_complete(cot, steps, question):
 
         success = False
         while not success:
-            try:
-                conditional_check_result = root_checker_agent(subject=subject, current_step=current_step, cot=masked_cot,
-                                                                question=question)
-                response = output_repraser(conditional_check_result)
 
+            root_checker_agent = LLM_agent(llm_type=llm_config['llm_type'], api_key=api_key, model=llm_config['model'],
+                                  temperature=llm_config['temperature'])
+            root_checker_agent.set_prompt('prompt_templates/root_checker_agent.json')
+            root_checker_agent.set_parser(Root_Checker_Agent)
+            arguments = {
+                'subject':subject,
+                'current_step':current_step,
+                'cot':masked_cot,
+                'question':question
+
+            }
+            try:
+                response = root_checker_agent.involk(arguments)
                 success = True
             except:
                 success = False
 
         print(f'Step {current_step}', response, '\n\n')
-        check_list.append((response['Step Hallucination']))
-        if (response['Step Hallucination'] == 'YES'):
+        check_list.append((response['Step_Hallucination']))
+        if (response['Step_Hallucination'] == 'YES'):
             debate_response = multi_agents_debate(subject,current_step,masked_cot,question,response)
             print('Old Version: ', masked_cot[i])
             partial_cot.append(debate_response['Correction'])
@@ -93,11 +122,23 @@ def multi_agents_debate(subject,current_step,masked_cot,question,response):
         print('attempt:',attempts)
         success = False
         while not success:
+
+            debate_agent = LLM_agent(llm_type=llm_config['llm_type'], api_key=api_key, model=llm_config['model'],
+                                  temperature=llm_config['temperature'])
+
+            debate_agent.set_prompt('prompt_templates/debate_agent.json')
+            debate_agent.set_parser(Debate_Agent)
+            arguments = {
+                'subject': subject,
+                'current_step': current_step,
+                'cot': masked_cot,
+                'question': question,
+                "response":final_response
+
+            }
             try:
-                debate = debate_agent(subject=subject, current_step=current_step, cot=masked_cot,
-                                                          question=question,response = response)
-                response = output_repraser(debate)
-                print('\n\n\n',response,'\n\n\n')
+                response = debate_agent.involk(arguments)
+                print('\n\n\n', response, '\n\n\n')
                 if response['Agreement'] == 'YES':
                     final_response = response
                     attempts += 1
@@ -105,6 +146,7 @@ def multi_agents_debate(subject,current_step,masked_cot,question,response):
                 success = True
                 counter += 1
             except:
+                print('failed')
                 success = False
 
     return final_response
@@ -166,7 +208,7 @@ def rerailer(df, num_steps= 'MULTI'):
             steps = len(result_steps)
 
             check_list, partial_cot = self_correct_complete(result_steps, steps, question=question,
-                                                            )
+                                                            subject=subject)
             if 'YES' in check_list:
                 corrected_cot, corrected_answer = generate_new_response(subject=subject, question=question,
                                                                         cot=partial_cot)
@@ -181,7 +223,7 @@ def rerailer(df, num_steps= 'MULTI'):
         result_df_dict['Corrected COT Answer'].append(new_answer)
         result_df_dict['corrected_cot'].append(corrected_cot)
         result_df_dict['Hallu Seq'].append(check_list)
-        if len(result_df_dict['CaseID']) >= 20:
+        if len(result_df_dict['CaseID']) >= 1:
             result_df = pd.DataFrame.from_dict(result_df_dict)
             result_df.to_csv(f'../result/rerailer_result_{num_steps}.csv', mode='a', header=not header_written, index=False)
             header_written = True  # Ensure header is not written again
@@ -196,11 +238,11 @@ def rerailer(df, num_steps= 'MULTI'):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--STEPS', type=str, required=True)
-    args = parser.parse_args()
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('--STEPS', type=str, required=True)
+    # args = parser.parse_args()
 
-    df_raw = pd.read_csv('../data/final_test_data/result_Math.csv')
+    df_raw = pd.read_csv('../data/final_test_data/added_experiments/cleaned_result_claude.csv')
     df = df_raw.loc[df_raw.Consistency == False]
-    rerailer(df, num_steps=args.STEPS)
+    rerailer(df, num_steps='MULTI')
 

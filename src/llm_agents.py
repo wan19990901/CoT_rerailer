@@ -15,6 +15,7 @@ class LLM_agent:
         self.api_key = api_key
         if llm_type == 'openai':
             self.llm = ChatOpenAI(openai_api_key=self.api_key, model_name=model, temperature=temperature)
+
         elif llm_type == 'anthropic':
             self.llm = ChatAnthropic(model=model,
                                      anthropic_api_key=self.api_key)
@@ -39,12 +40,12 @@ class LLM_agent:
         while (not success) and attempts < 3:
             try:
                 response = chain.invoke(var_dict)
-                print(response)
                 if (self.llm_type != 'ollama'):
 
                     if len(response) == self.num_of_llm_output:
                         success = True
                     else:
+
                         print("Response length does not match the expected length.")
                 else:
                     success = True
@@ -69,7 +70,7 @@ class LLM_agent:
             for key, val in json.load(f).items():
                 if (self.llm_type != 'ollama'):
                     if key == 'system':
-                        val += '\n{format_instructions}'
+                        val += 'You need to output your responses by following the format. NOT OUTPUT THIS FORMAT INSTRUCTION\n{format_instructions}'
                 message.append((key, val))
 
         chat_prompt = ChatPromptTemplate.from_messages(message)

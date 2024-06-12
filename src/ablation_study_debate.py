@@ -136,7 +136,7 @@ if __name__ == '__main__':
         'corrected_cot': []
     }
 
-    df = pd.read_csv('../data/final_test_data/df_final.csv')
+    df = pd.read_csv('../data/final_test_data/added_experiments/rerailer_result_MULTI_gpt4.csv')
     # df = df_raw.loc[df_raw.Consistency == False]
 
     print(f'There are {len(df)} data in total')
