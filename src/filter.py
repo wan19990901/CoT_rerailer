@@ -8,9 +8,9 @@ from tqdm import tqdm
 import re
 llm_config = {
     # change these three together
-    'llm_type': 'openai',  # openai, ollama, anthropic
-    'api_key_link': 'api_key.txt',
-    'model': "gpt-4",  # see llm_model.txt
+    'llm_type': 'anthropic',  # openai, ollama, anthropic
+    'api_key_link': 'api_key_claude.txt',
+    'model': "claude-3-sonnet-20240229",  # see llm_model.txt
     'temperature': 0,
 }
 with open(llm_config['api_key_link'], 'r') as f:
@@ -289,12 +289,12 @@ def run_experiment_with_cot(temp_df):
 
 def save_results(final_df):
     """Save the final and debug dataframes to CSV files."""
-    final_df.to_csv('result_gpt4.csv', index=False)
+    final_df.to_csv('result_claude.csv', index=False)
     # debug_df.to_csv('debug_output_gpt4.csv', index=False)
 
 if __name__ == '__main__':
     PREPROCESSED_FP = '../data/preprocessed'
-    df = load_data(PREPROCESSED_FP,'data_gpt4.csv')
+    df = load_data(PREPROCESSED_FP,'data_claude.csv')
     temp_df = preprocess_samples_all(df)
     final_df = run_experiment_with_cot(temp_df)
     save_results(final_df)
