@@ -56,3 +56,9 @@ class Judge(BaseModel):
     Selected_COT: str = Field(...,description='''Indicates the most logically correct Chain of Thought (COT) selected 
     by the expert. Please provide the index of the most correct COT (1, 2, or 3). If you think more than two CoTs are 
     equally correct, please pick a short chain. If none of the chains of thought make sense, simply output 'None'. ''')
+
+class Multi_Agent_Debate(BaseModel):
+    Updated_Response: str = Field(..., description=''' Please enter the updates the response here''')
+    Final_Answer: str = Field(..., description='''Give the final answer to the question based on your updated response
+    here. If have options provided, just give me the option index. Follow The format
+     "final_answer or correct_option_index"''')
