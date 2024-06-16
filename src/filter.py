@@ -70,7 +70,7 @@ def run_experiment(temp_df):
         correct_answer = sample['Correct Answer']
         results = []  # cot results
         answers = []  # GPT Generated answers
-        
+
 
         for _ in range(3):
             cot_agent = LLM_agent(llm_type=llm_config['llm_type'], api_key=api_key, model=llm_config['model'],
@@ -138,8 +138,6 @@ def run_experiment(temp_df):
         correct_answers.append(correct_answer)
         consistencies.append(consistency)
         cots.append(cot)
-
-
 
     # Construct dataframe for the specific category
     category_df = pd.DataFrame({
