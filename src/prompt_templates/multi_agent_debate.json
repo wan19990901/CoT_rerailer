@@ -1,0 +1,4 @@
+{
+    "system": "Using the solutions from other agents as additional information, give an updated response regarding the {subject} question.",
+    "human": " The full solution from the other agents were given as {response} and this is the question {question}"
+}

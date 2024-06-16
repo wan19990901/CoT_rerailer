@@ -1,0 +1,83 @@
+CaseID,Category,question,num_of_debates,sum_of_debates
+33,college_mathematics,"Up to isomorphism, how many additive abelian groups G of order 16 have the property that x + x + x + x = 0 for each x in G ? The options are: A) 0, B) 1, C) 2, D) 3",[1],1
+31,college_mathematics,"How many positive numbers x satisfy the equation cos(97x) = x? The options are: A) 1, B) 15, C) 31, D) 49","[1, 1, 1, 1, 1]",5
+33,college_mathematics,"Up to isomorphism, how many additive abelian groups G of order 16 have the property that x + x + x + x = 0 for each x in G ? The options are: A) 0, B) 1, C) 2, D) 3","[1, 3, 1]",5
+36,college_mathematics,"A fair coin is to be tossed 100 times, with each toss resulting in a head or a tail. If H is the total number of heads and T is the total number of tails, which of the following events has the greatest probability? The options are: A) H = 50, B) T >= 60, C) 51 <= H <= 55, D) H >= 48 and T >= 48",0,0
+37,college_mathematics,"The curves y = (sin x + cos x)^4 and y = (sin x - cos x)^4 intersect at x = 0. If a is the smallest positive value of x at which these curves next intersect, determine the area between these curves from x = 0 to x = a. The options are: A) 2, B) π, C) 4, D) 3π/2","[2, 1, 1, 1, 1]",6
+38,college_mathematics,"If f : (0, 1) → (0, 1], then which of the following could be TRUE?
+I. f is one-to-one and onto.
+II. The image of f is compact.
+III. f is continuous, one-to-one, and onto. The options are: A) I only, B) II only, C) I and II only, D) I and III only",0,0
+39,college_mathematics,"If f is a linear transformation from the plane to the real numbers and if f(1, 1) = 1 and f(-1, 0) = 2, then f(3, 5) = The options are: A) 9, B) 8, C) 0, D) -5",[1],1
+40,college_mathematics,"Statement 1 | If A is connected, the closure of A must be connected. Statement 2 | Every continuous function f : (0, 1) → (0, 1) has a fixed point. The options are: A) True, True, B) True, False, C) False, True, D) False, False","[1, 1, 1, 1]",4
+41,college_mathematics,"Sofia and Tess will each randomly choose one of the 10 integers from 1 to 10. What is the probability that neither integer chosen will be the square of the other? The options are: A) 0.64, B) 0.72, C) 0.81, D) 0.95",[1],1
+42,college_mathematics,"A university’s mathematics department has 10 professors and will offer 20 different courses next semester. Each professor will be assigned to teach exactly 2 of the courses, and each course will have exactly one professor assigned to teach it. If any professor can be assigned to teach any course, how many different complete assignments of the 10 professors to the 20 courses are possible? The options are: A) 20!/2^(10), B) 10!/2^9, C) 10^(20) - 2^(10), D) 10^(20) - 100","[1, 2]",3
+42,college_mathematics,"A university’s mathematics department has 10 professors and will offer 20 different courses next semester. Each professor will be assigned to teach exactly 2 of the courses, and each course will have exactly one professor assigned to teach it. If any professor can be assigned to teach any course, how many different complete assignments of the 10 professors to the 20 courses are possible? The options are: A) 20!/2^(10), B) 10!/2^9, C) 10^(20) - 2^(10), D) 10^(20) - 100","[1, 1, 1, 1]",4
+44,college_mathematics,"In the xy-plane, the graph of x^(log y) = y^log x is The options are: A) the open first quadrant, B) a closed curve, C) a ray in the open first quadrant, D) a single point","[1, 1]",2
+45,college_mathematics,"For which value of n are there exactly two abelian groups of order n up to isomorphism? The options are: A) 4, B) 7, C) 8, D) 12",[1],1
+44,college_mathematics,"In the xy-plane, the graph of x^(log y) = y^log x is The options are: A) the open first quadrant, B) a closed curve, C) a ray in the open first quadrant, D) a single point","[1, 1]",2
+47,college_mathematics,"Statement 1 |  Suppose ∑|a_i| diverges and ∑ a_i = 2. There is a rearrangement a_i_k of the terms such that ∑ a_i_k = 4. Statement 2 | There exists metric spaces X and Y with X closed and bounded and a continuous mapping f : X → Y such that f(X) is NOT “closed and bounded”. The options are: A) True, True, B) True, False, C) False, True, D) False, False",0,0
+48,college_mathematics,"The shortest distance from the curve xy = 8 to the origin is The options are: A) 4, B) 8, C) 16, D) 2sqrt(2)","[1, 1]",2
+49,college_mathematics,"A large class is to be divided into teams and each student must be a member of exactly one team. However, each student dislikes three of their classmates. Dislike between students need not be mutual. If the teams do not need to be equally sized, how many must be created so that no student is the teammate of someone they dislike? The options are: A) 4, B) 7, C) 10, D) 13","[1, 1, 1]",3
+50,college_mathematics,"The map x -> axa^2 of a group G into itself is a homomorphism if and only if The options are: A) G is abelian, B) G = {e}, C) a^3 = e, D) a^2 = a","[1, 1, 1, 1]",4
+33,college_mathematics,"Up to isomorphism, how many additive abelian groups G of order 16 have the property that x + x + x + x = 0 for each x in G ? The options are: A) 0, B) 1, C) 2, D) 3",[1],1
+52,college_mathematics,"If the finite group G contains a subgroup of order seven but no element (other than the identity) is its own inverse, then the order of G could be The options are: A) 27, B) 28, C) 35, D) 37",[1],1
+38,college_mathematics,"If f : (0, 1) → (0, 1], then which of the following could be TRUE?
+I. f is one-to-one and onto.
+II. The image of f is compact.
+III. f is continuous, one-to-one, and onto. The options are: A) I only, B) II only, C) I and II only, D) I and III only","[1, 1, 1]",3
+54,college_mathematics,"Water drips out of a hole at the vertex of an upside down cone at a rate of 3 cm^3 per minute. The
+cone’s height and radius are 2 cm and 1 cm, respectively. At what rate does the height of the water change
+when the water level is half a centimeter below the top of the cone? The volume of a cone is V = (π/3)*r^2*h,
+where r is the radius and h is the height of the cone. The options are: A) −48/π cm/min, B) −4/(3π) cm/min, C) −8/(3π) cm/min, D) −16/(3π) cm/min",[1],1
+55,college_mathematics,"The region bounded by the curves y = x and y = x^2 in the first quadrant of the xy-plane is rotated about the y-axis. The volume of the resulting solid of revolution is The options are: A) π/12, B) π/6, C) π/3, D) 2π/3","[2, 3, 3, 1, 1]",10
+48,college_mathematics,"The shortest distance from the curve xy = 8 to the origin is The options are: A) 4, B) 8, C) 16, D) 2sqrt(2)","[1, 1, 1, 1, 1]",5
+57,college_mathematics,"Let (Z_{10} , +, x) be the ring of integers modulo 10, and let S be the subset of Z_{10} represented by {0, 2, 4, 6, 8}. Which of the following statements is FALSE? The options are: A) (S, +, x) is closed under addition modulo 10., B) (S, +, x) is closed under multiplication modulo 10., C) (S, +, x) has an identity under addition modulo 10., D) (S, +, x) has no identity under multiplication modulo 10.",0,0
+48,college_mathematics,"The shortest distance from the curve xy = 8 to the origin is The options are: A) 4, B) 8, C) 16, D) 2sqrt(2)","[1, 1, 1, 1, 1]",5
+59,college_mathematics,"What is the area of an equilateral triangle whose inscribed circle has radius 2? The options are: A) 12, B) 16, C) 12*sqrt(3), D) 16*sqrt(3)",0,0
+28,college_mathematics,"If a real number x is chosen at random in the interval [0, 3] and a real number y is chosen at random in the interval [0, 4], what is the probability that x < y? The options are: A) 1/2, B) 7/12, C) 5/8, D) 2/3",0,0
+50,college_mathematics,"The map x -> axa^2 of a group G into itself is a homomorphism if and only if The options are: A) G is abelian, B) G = {e}, C) a^3 = e, D) a^2 = a","[1, 1]",2
+62,college_mathematics,"Let T: R^2 -> R^2 be the linear transformation that maps the point (1, 2) to (2, 3) and the point (-1, 2) to (2, -3). Then T maps the point (2, 1) to The options are: A) (1, 6), B) (-1, 4), C) (3, 2), D) (-4, 3)",0,0
+49,college_mathematics,"A large class is to be divided into teams and each student must be a member of exactly one team. However, each student dislikes three of their classmates. Dislike between students need not be mutual. If the teams do not need to be equally sized, how many must be created so that no student is the teammate of someone they dislike? The options are: A) 4, B) 7, C) 10, D) 13","[1, 1, 1, 1, 1]",5
+64,college_mathematics,"The maximum number of acute angles in a convex 10-gon in the Euclidean plane is The options are: A) 1, B) 2, C) 3, D) 4","[1, 1, 1]",3
+65,college_mathematics,"Let f(x, y) = x^3 + y^3 + 3xy for all real x and y. Then there exist distinct points P and Q such that f has a The options are: A) local maximum at P and at Q, B) saddle point at P and at Q, C) local maximum at P and a saddle point at Q, D) local minimum at P and a saddle point at Q","[3, 1]",4
+66,college_computer_science,"Which of the following statements about horizontal versus vertical microarchitecture is (are) true?
+I. Programs for horizontal architectures require more time steps than those for vertical architectures.
+II. Horizontal microinstructions are unencoded.
+III. Horizontal microinstructions usually have a single opcode and multiple operand specifiers. The options are: A) I only, B) II only, C) III only, D) II and III only",[1],1
+67,college_computer_science,"Let A and B be two sets of words (strings) from Σ*, for some alphabet of symbols Σ. Suppose that B is a subset of A. Which of the following statements must always be true of A and B ?
+I. If A is finite, then B is finite.
+II. If A is regular, then B is regular.
+III. If A is context-free, then B is context-free. The options are: A) I only, B) II only, C) III only, D) I and II only",[1],1
+68,college_computer_science,"An integer c is a common divisor of two integers x and y if and only if c is a divisor of x and c is a divisor of y. Which of the following sets of integers could possibly be the set of all common divisors of two integers? The options are: A) {-6,-2, -1, 1, 2, 6}, B) {-6, -2, -1, 0, 1, 2, 6}, C) {-6, -3, -2, -1, 1, 2, 3, 6}, D) {-6, -3, -2, -1, 0, 1, 2, 3, 6}",0,0
+68,college_computer_science,"An integer c is a common divisor of two integers x and y if and only if c is a divisor of x and c is a divisor of y. Which of the following sets of integers could possibly be the set of all common divisors of two integers? The options are: A) {-6,-2, -1, 1, 2, 6}, B) {-6, -2, -1, 0, 1, 2, 6}, C) {-6, -3, -2, -1, 1, 2, 3, 6}, D) {-6, -3, -2, -1, 0, 1, 2, 3, 6}",0,0
+70,college_computer_science,"Array A contains 256 elements of 4 bytes each. Its first element is stored at physical address 4,096.
+Array B contains 512 elements of 4 bytes each. Its first element is stored at physical address 8,192.
+Assume that only arrays A and B can be cached in an initially empty, physically addressed, physically tagged, direct-mapped, 2K-byte cache with an 8-byte block size. The following loop is then executed.
+for (i = 0; i < 256; i++)
+        A[i] = A[i] + B[2*i];
+During the execution of the loop, how many bytes will be written to memory if the cache has a write-back policy? The options are: A) 0, B) 256, C) 1024, D) 2000",[1],1
+71,college_computer_science,"A particular disk unit uses a bit string to record the occupancy or vacancy of its tracks, with O denoting vacant and 1 denoting occupied. A 32-bit segment of this string has the hexadecimal value D4FE2003. The percentage of occupied tracks for the corresponding part of the disk, to the nearest percent, is The options are: A) 12%, B) 25%, C) 38%, D) 44%",0,0
+67,college_computer_science,"Let A and B be two sets of words (strings) from Σ*, for some alphabet of symbols Σ. Suppose that B is a subset of A. Which of the following statements must always be true of A and B ?
+I. If A is finite, then B is finite.
+II. If A is regular, then B is regular.
+III. If A is context-free, then B is context-free. The options are: A) I only, B) II only, C) III only, D) I and II only",[1],1
+73,college_computer_science,"In the NoNicks operating system, the time required by a single file-read operation has four nonoverlapping components:
+disk seek time-25 msec
+disk latency time-8 msec
+disk transfer time- 1 msec per 1,000 bytes
+operating system overhead-1 msec per 1,000 bytes + 10 msec
+In version 1 of the system, the file read retrieved blocks of 1,000 bytes. In version 2, the file read (along with the underlying layout on disk) was modified to retrieve blocks of 4,000 bytes. The ratio of-the time required to read a large file under version 2 to the time required to read the same large file under version 1 is approximately The options are: A) 1:4, B) 1:3.5, C) 1:1, D) 1.1:1","[1, 1]",2
+68,college_computer_science,"An integer c is a common divisor of two integers x and y if and only if c is a divisor of x and c is a divisor of y. Which of the following sets of integers could possibly be the set of all common divisors of two integers? The options are: A) {-6,-2, -1, 1, 2, 6}, B) {-6, -2, -1, 0, 1, 2, 6}, C) {-6, -3, -2, -1, 1, 2, 3, 6}, D) {-6, -3, -2, -1, 0, 1, 2, 3, 6}",0,0
+75,college_computer_science,"Consider the collection of all undirected graphs with 10 nodes and 6 edges. Let M and m, respectively, be the maximum and minimum number of connected components in any graph in the collection. If a graph has no selfloops and there is at most one edge between any pair of nodes, which of the following is true? The options are: A) M = 10, m = 10, B) M = 10, m = 1, C) M = 7, m = 4, D) M = 6, m = 4","[1, 3, 1, 2]",7
+76,college_computer_science,"Let M be a single-tape, deterministic Turing machine with tape alphabet {blank,0,1}, and let C denote the (possibly infinite) computation of M starting with a blank tape. The input to each problem below is M, together with a positive integer n. Which of the following problems is (are) decidable?
+I. The computation C lasts for at least n steps.
+II. The computation C lasts for at least n steps, and M prints a 1 at some point after the nth step.
+III. M scans at least n distinct tape squares during the computation C. The options are: A) None, B) III only, C) I and II only, D) I and III only",0,0
+77,college_computer_science,"To compute the matrix product M_1M_2, where M_1 has p rows and q columns and where M_2 has q rows and r columns, takes time proportional to pqr, and the result is a matrix of p rows and r columns. Consider the product of three matrices N_1N_2N_3 that have, respectively, w rows and x columns, x rows and y columns, and y rows and z columns. Under what condition will it take less time to compute the product as (N_1N_2)N_3 (i.e., multiply the first two matrices first) than to compute it as N_1(N_2 N_3)? The options are: A) There is no such condition; i.e., they will always take the same time., B) 1/x + 1/z < 1/w + 1/y, C) x > y, D) 1/w + 1/x < 1/y + 1/z",0,0
+78,college_computer_science,"Which of the following problems can be solved by a standard greedy algorithm?
+I. Finding a minimum spanning tree in an undirected graph with positive-integer edge weights
+II. Finding a maximum clique in an undirected graph
+III. Finding a maximum flow from a source node to a sink node in a directed graph with positive-integer edge capacities The options are: A) I only, B) II only, C) III only, D) I and II only",0,0
+79,college_computer_science,"A ""strictly binary tree"" is a binary tree in which every node that is not a leaf has two children. Suppose that for a class of strictly binary trees there exists c > 0 such that, for any tree in the class, the ratio of the lengths of any two root-to-leaf paths is bounded above by c. Which of the following best characterizes the height h of any tree in this class, where N is the number of nodes in the tree and N > 1 ? The options are: A) h <= log2(N), B) h = 1/c * log2(N), C) h < c log2(N), D) h > c log2(N)",[1],1
+80,college_computer_science,"Of the following, which best approximates the ratio of the number of nonterminal nodes to the total number of nodes in a complete K-ary tree of depth N? The options are: A) 1/K, B) K-1/K, C) log_10 (1/N), D) N-1/m",[1],1

@@ -1,0 +1,4 @@
+{
+    "system": "You are a professional specialized in {subject}. \n    A Chain of Thought (COT) is a step-by-step reasoning process used to solve a problem or answer a question. \n    You have been presented with three different COTs below for the question \"{question}\". \n    Please carefully analyze these COTs and provide your assessment on which one is the most logically sound based on the given information and your expertise in the subject.",
+    "human": "Here are the three Chains of Thought (COTs) for your analysis: \n\nCOT 1: {cot1}\n\nCOT 2: {cot2}\n\nCOT 3: {cot3}\n\n"
+}
