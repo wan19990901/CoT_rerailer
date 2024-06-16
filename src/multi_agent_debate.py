@@ -10,7 +10,7 @@ PREPROCESSED_FP = '../data/preprocessed'
 llm_config = {
     # change these three together
     'llm_type': 'openai',  # openai, ollama, anthropic
-    'api_key_link': 'api_key.txt',
+    'api_key_link': 'api_key_gy.txt',
     'model': "gpt-4o",  # see llm_model.txt
     'temperature': 0,
 }
@@ -154,7 +154,7 @@ def mad(df, num_steps= 'MULTI'):
 
         if len(result_df_dict['CaseID']) >= 1:
             result_df = pd.DataFrame.from_dict(result_df_dict)
-            result_df.to_csv(f'../result/MAD_result_{num_steps}.csv', mode='a', header=not header_written, index=False)
+            result_df.to_csv(f'../result/gpt_4_MAD_result_{num_steps}.csv', mode='a', header=not header_written, index=False)
             header_written = True  # Ensure header is not written again
             # Clear the buffer
             for key in result_df_dict.keys():
@@ -162,7 +162,7 @@ def mad(df, num_steps= 'MULTI'):
 
     if len(result_df_dict['CaseID']) > 0:
         result_df = pd.DataFrame.from_dict(result_df_dict)
-        result_df.to_csv(f'../result/rerailer_result_{num_steps}.csv', mode='a', header=not header_written, index=False)
+        result_df.to_csv(f'../result/gpt_4_MAD_result_{num_steps}.csv', mode='a', header=not header_written, index=False)
 
 
 
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     # parser.add_argument('--STEPS', type=str, required=True)
     # args = parser.parse_args()
 
-    df_raw = pd.read_csv('../data/final_test_data/added_experiments/cleaned_result_gpt3.5.csv')
-    df = df_raw.loc[df_raw.Consistency == False].iloc[55:]
+    df_raw = pd.read_csv('../data/final_test_data/added_experiments/cleaned_result_gpt4.csv')
+    df = df_raw.loc[df_raw.Consistency == False]
     mad(df, num_steps='MULTI')
 
