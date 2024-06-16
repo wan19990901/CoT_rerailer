@@ -238,11 +238,11 @@ def rerailer(df, num_steps= 'MULTI'):
 
 
 if __name__ == '__main__':
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument('--STEPS', type=str, required=True)
-    # args = parser.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--STEPS', type=str, required=True)
+    args = parser.parse_args()
 
     df_raw = pd.read_csv('../data/final_test_data/added_experiments/cleaned_result_claude.csv')
     df = df_raw.loc[df_raw.Consistency == False]
-    rerailer(df, num_steps='MULTI')
+    rerailer(df, args.STEPS)
 
