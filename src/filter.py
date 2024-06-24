@@ -287,12 +287,12 @@ def run_experiment_with_cot(temp_df):
 
 def save_results(final_df):
     """Save the final and debug dataframes to CSV files."""
-    final_df.to_csv('result_claude.csv', index=False)
+    final_df.to_csv('result_gpt4.csv', index=False)
     # debug_df.to_csv('debug_output_gpt4.csv', index=False)
 
 if __name__ == '__main__':
     PREPROCESSED_FP = '../data/preprocessed'
-    df = load_data(PREPROCESSED_FP,'data_claude.csv')
+    df = load_data(PREPROCESSED_FP,'data_gpt4.csv')
     temp_df = preprocess_samples_all(df)
     final_df = run_experiment_with_cot(temp_df)
     save_results(final_df)
