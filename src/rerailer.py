@@ -242,7 +242,7 @@ if __name__ == '__main__':
     parser.add_argument('--STEPS', type=str, required=True)
     args = parser.parse_args()
 
-    df_raw = pd.read_csv('../data/final_test_data/added_experiments/cleaned_result_claude.csv')
+    df_raw = pd.read_csv('../data/final_test_data/final_result_gpt4.csv')
     df = df_raw.loc[df_raw.Consistency == False]
     rerailer(df, args.STEPS)
 

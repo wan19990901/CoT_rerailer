@@ -39,10 +39,10 @@ To run the code:
 
 ## Results
 All results are stored in the `result` folder. There are two subfolders:
-- `main_results`: Contains the results for our main experiments.
+- `results`: Contains the results for our main experiments.
 - `ablation_study`: Contains the results for the ablation studies.
 
-Within the `main_results` subfolder, there is a `performance` subsubfolder that contains the results of our best model (rerailing with multi-step). The `performance.ipynb` notebook in this folder summarizes and visualizes all the key results.
+Within the `src` subfolder, there is a `Evaluation` notebook that contains the results of our reported results. The `Evaluation.ipynb` notebook in this folder summarizes and visualizes all the key results.
 
 ## References
 - MathQA dataset: https://github.com/NingMiao/SelfCheck/tree/master/data/MathQA
