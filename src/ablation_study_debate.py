@@ -4,8 +4,25 @@ import re
 from collections import Counter
 from llm_agents import *
 from tqdm import tqdm
+from dotenv.main import load_dotenv
+import random
+import os
 PREPROCESSED_FP = '../data/preprocessed'
+llm_config = {
+    # change these three together
+    'llm_type': 'openai',  # openai, ollama, anthropic
+    'api_key_link': 'api_key_claude.txt',
+    'model': "gpt-4-0125-preview",  # see llm_model.txt
+    'temperature': 0,
+}
 
+
+
+load_dotenv()
+try:
+    api_key = os.environ.get('OPENAI_GY_API_KEY')
+except:
+    raise "APIKEY Error, no API Key"
 
 def load_df(dataset_fp):
     df = pd.read_csv(os.path.join(PREPROCESSED_FP, dataset_fp))
@@ -18,17 +35,23 @@ def load_df(dataset_fp):
 
 def generate_new_response(subject, question,cot):
     success = False
+    while not success:
 
-    result = correct_answer_agent_partial_cot(subject=subject, question=question, cot=cot)
-    try:
-        forward_result = output_repraser(result)
-        success = True
-    except:
-        print('parsing error')
-        forward_result = {
-            'cot': 'error',
-            'final_answer':'error'
+        correct_answer_agent_partial_cot = LLM_agent(llm_type=llm_config['llm_type'], api_key=api_key, model=llm_config['model'],
+                                  temperature=llm_config['temperature'])
+        correct_answer_agent_partial_cot.set_prompt('llm_project/src/prompt_templates/correct_answer_agent_partial_cot.json')
+        correct_answer_agent_partial_cot.set_parser(Correct_Answer_Agent_Partial_CoT)
+        arguments = {
+            'subject':subject,
+            'question':question,
+            'cot':cot
         }
+
+        try:
+            forward_result = correct_answer_agent_partial_cot.involk(arguments)
+            success = True
+        except:
+            success = False
     print('------------------------------------------------------')
     for key, value in forward_result.items():
         print(key)
@@ -37,7 +60,7 @@ def generate_new_response(subject, question,cot):
     cot, final_answer = forward_result.values()
     return cot, final_answer
 
-def self_correct_complete(cot, steps, question):
+def self_correct_complete(cot, steps, question,subject):
     check_list = []
     partial_cot = []
     for i in range(int(steps)):
@@ -48,18 +71,27 @@ def self_correct_complete(cot, steps, question):
 
         success = False
         while not success:
-            try:
-                conditional_check_result = root_checker_agent(subject=subject, current_step=current_step, cot=masked_cot,
-                                                                question=question)
-                response = output_repraser(conditional_check_result)
 
+            root_checker_agent = LLM_agent(llm_type=llm_config['llm_type'], api_key=api_key, model=llm_config['model'],
+                                  temperature=llm_config['temperature'])
+            root_checker_agent.set_prompt('llm_project/src/prompt_templates/root_checker_agent.json')
+            root_checker_agent.set_parser(Root_Checker_Agent)
+            arguments = {
+                'subject':subject,
+                'current_step':current_step,
+                'cot':masked_cot,
+                'question':question
+
+            }
+            try:
+                response = root_checker_agent.involk(arguments)
                 success = True
             except:
                 success = False
 
         print(f'Step {current_step}', response, '\n\n')
-        check_list.append((response['Step Hallucination']))
-        if (response['Step Hallucination'] == 'YES'):
+        check_list.append((response['Step_Hallucination']))
+        if (response['Step_Hallucination'] == 'YES'):
             debate_response = multi_agents_debate(subject,current_step,masked_cot,question,response)
             print('Old Version: ', masked_cot[i])
             partial_cot.append(debate_response['Correction'])
@@ -117,12 +149,6 @@ def multi_agents_debate(subject,current_step,masked_cot,question,response):
 
 
 if __name__ == '__main__':
-    config = {
-        'dataset_fp': 'Self_Check.csv',
-        'test_case_number': range(0, 146),
-        'ngram': 'all',
-        'num_agents': 1
-    }
 
     result_df_dict = {
         'CaseID': [],
@@ -136,21 +162,21 @@ if __name__ == '__main__':
         'corrected_cot': []
     }
 
-    df = pd.read_csv('../data/final_test_data/added_experiments/rerailer_result_MULTI_gpt4.csv')
-    # df = df_raw.loc[df_raw.Consistency == False]
+    df_raw = pd.read_csv('llm_project/result/gpt4_results.csv')
+    df = df_raw.loc[df_raw.Consistency == False]
 
     print(f'There are {len(df)} data in total')
     print(f'Category distribution is {Counter(df.Category.tolist())}')
 
     # Add a variable to track whether the header has been written
     header_written = False
-    for row_idx in tqdm(range(319,len(df))):
+    for row_idx in tqdm(range(119,len(df))):
         row = df.iloc[row_idx]
         subject = row['Category']
         question = row['Question']
-        correct_answer = row['Correct Answer']
+        correct_answer = row['Correct_Answer']
         cot = row['raw_cot']
-        raw_cot_answer = row['Raw COT Answer']
+        raw_cot_answer = row['Output_Answer']
 
         result_df_dict['CaseID'].append(row_idx)
         result_df_dict['Category'].append(subject)
@@ -185,7 +211,7 @@ if __name__ == '__main__':
         steps =  len(result_steps)
 
 
-        check_list,partial_cot = self_correct_complete(result_steps, steps, question=question,
+        check_list,partial_cot = self_correct_complete(result_steps, steps, question=question,subject=subject
                                                  )
         if 'YES' in check_list:
             corrected_cot, corrected_answer = generate_new_response(subject=subject,question=question,cot=partial_cot)
@@ -200,7 +226,7 @@ if __name__ == '__main__':
         result_df_dict['Hallu Seq'].append(check_list)
         if len(result_df_dict['CaseID']) >= 1:
             result_df = pd.DataFrame.from_dict(result_df_dict)
-            result_df.to_csv('../result/df_final_no_debate.csv', mode='a', header=not header_written, index=False)
+            result_df.to_csv('llm_project/result/df_final_no_debate.csv', mode='a', header=not header_written, index=False)
             header_written = True  # Ensure header is not written again
             # Clear the buffer
             for key in result_df_dict.keys():
@@ -208,4 +234,4 @@ if __name__ == '__main__':
 
     if len(result_df_dict['CaseID']) > 1:
         result_df = pd.DataFrame.from_dict(result_df_dict)
-        result_df.to_csv('../result/df_final_no_debate.csv', mode='a', header=not header_written, index=False)
+        result_df.to_csv('llm_project/result/df_final_no_debate.csv', mode='a', header=not header_written, index=False)
