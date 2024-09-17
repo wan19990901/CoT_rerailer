@@ -1,1 +1,0 @@
-To use this codebase, please first fill in you OpenAI API in src/gpt.py and then check script/run.sh for an example of running and evaluating.
