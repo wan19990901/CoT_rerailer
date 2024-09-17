@@ -10,7 +10,7 @@ PREPROCESSED_FP = '../data/preprocessed'
 llm_config = {
     # change these three together
     'llm_type': 'anthropic',  # openai, ollama, anthropic
-    'api_key_link': 'api_key_claude.txt',
+    'api_key_link': 'api_key.txt', # replace with your api key file
     'model': "claude-3-sonnet-20240229",  # see llm_model.txt
     'temperature': 0,
 }

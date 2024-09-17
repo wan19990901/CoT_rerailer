@@ -10,8 +10,8 @@ PREPROCESSED_FP = '../data/preprocessed'
 llm_config = {
     # change these three together
     'llm_type': 'openai',  # openai, ollama, anthropic
-    'api_key_link': 'api_key_gy.txt',
-    'model': "gpt-4o",  # see llm_model.txt
+    'api_key_link': 'api_key.txt', # replace with your api key file
+    'model': "gpt-4",  # see llm_model.txt
     'temperature': 0,
 }
 

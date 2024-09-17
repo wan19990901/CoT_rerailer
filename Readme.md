@@ -25,24 +25,36 @@ We also keep a subfolder called final_test data, which includes the results file
 
 ## Code
 All main code is located in the `src` folder:
-- `llm_agent.py` defines the prompts for the various agents used in the paper.
-- `filter.py` contains the code for the first derailing part of our pipeline.
+- `Evaluation.ipynb` contains all the evaluation results we reported in the paper.
+- `SOTA_comparison.ipynb` contains all the state-of-the-art comparision results we reported in the paper.
+- `prompt_templates` folder defines the prompts for the various agent used in the paper.
+- `Parsers.py` contains all the parser for different agents.
+- `llm_agent.py` defines llm model configs.
+- `derailer.py` contains the code for the first derailing part of our pipeline.
 - `rerailer.py` contains the code for the rerailer part of the pipeline.
-- `ablation_study_debate.py` and `ablation_study_filter.py` are used for running the two ablation studies.
+- `ablation_study_derailer_only.py` and `ablation_study_rerailer_only.py` are used for running the two ablation studies.
 
 To run the code:
 1. Ensure you have set up the conda environment and added your OpenAI GPT-4 API key.
-2. Run the preprocessing Jupyter notebook in the `data` folder to preprocess the datasets.
-3. Run `filter.py` to perform the derailing step of the pipeline.
+2. Preprocess the datasets based on the template.
+3. Run `derailer.py` to perform the derailing step of the pipeline.
 4. Run `rerailer.py` to perform the rerailer step of the pipeline.
-5. (Optional) Run `ablation_study_debate.py` and `ablation_study_filter.py` to conduct the ablation studies.
+5. (Optional) Run `ablation_study_derailer_only.py` and `ablation_study_rerailer_only.py` to conduct the ablation studies.
 
 ## Results
 All results are stored in the `result` folder. There are two subfolders:
 - `results`: Contains the results for our main experiments.
+- `sota_comparison`: Contains the results for state-of-the-art comparison
 - `ablation_study`: Contains the results for the ablation studies.
 
-Within the `src` subfolder, there is a `Evaluation` notebook that contains the results of our reported results. The `Evaluation.ipynb` notebook in this folder summarizes and visualizes all the key results.
+## Checking Results In the Paper
+- Within the `src` subfolder, there is a `Evaluation` notebook that contains the results of our reported results. The `Evaluation.ipynb` notebook in this folder summarizes and visualizes all the key results. 
+
+- For State-of-the-Art comparison, please see `src/SOTA_comparison.ipynb`
+
+## Use of Deductive Verification and SelfCheck
+- Deductive Verification GitHub link: https://github.com/ritun16/chain-of-verification/tree/main?tab=readme-ov-file
+- Self Check GitHub link: https://github.com/lz1oceani/verify_cot/tree/main
 
 ## References
 - MathQA dataset: https://github.com/NingMiao/SelfCheck/tree/master/data/MathQA
