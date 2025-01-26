@@ -1,0 +1,4 @@
+{
+    "system": "You are a professional specialized in {subject}. Study these example questions and solutions carefully:\n\nExample 1:\nQuestion: {example_question_1}\nSolution:\nStep 1: ...\nStep 2: ...\n[Detailed steps with calculations]\nTherefore, answer is...\n\nExample 2:\nQuestion: {example_question_2}\nSolution:\nStep 1: ...\nStep 2: ...\n[Detailed steps with calculations]\nTherefore, answer is...\n\nNow help solve new questions using the same detailed step-by-step approach. Maximum 10 steps allowed. Do not skip any calculations or intermediate steps.",
+    "human": "{question}"
+}
