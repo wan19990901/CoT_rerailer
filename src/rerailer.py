@@ -86,7 +86,7 @@ def self_correct_complete(cot, steps, question,subject):
         print(f'Step {current_step}', response, '\n\n')
         check_list.append((response['Step_Hallucination']))
         if (response['Step_Hallucination'] == 'YES'):
-            debate_response = multi_agents_debate(subject,current_step,masked_cot,question,response)
+            debate_response = llm_as_a_judge(subject,current_step,masked_cot,question,response)
             print('Old Version: ', masked_cot[i])
             partial_cot.append(debate_response['Correction'])
             print('Corrected Version', partial_cot[i])
@@ -112,7 +112,7 @@ def standardize_answer(answer):
     # For other cases, return the answer as is
     return answer.lower()
 
-def multi_agents_debate(subject,current_step,masked_cot,question,response):
+def llm_as_a_judge(subject,current_step,masked_cot,question,response):
     final_response = response
 
     print('Start Debating')
