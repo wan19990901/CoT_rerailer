@@ -1,0 +1,30 @@
+from pydantic import BaseModel, Field, model_validator
+
+
+class Base_Parser(BaseModel):
+    Answer: str = Field(description="Just the answer only to the provided question without explanation")
+    Confidence: str = Field(description="Confidence for final answer; it should be a floating number from 0 to 1 where 0 to 0.5 means less confident and 0.5 to 1 means more confident")
+
+    # # You can add custom validation logic easily with Pydantic.
+    # @model_validator(mode="before")
+    # @classmethod
+    # def question_ends_with_question_mark(cls, values: dict) -> dict:
+    #     setup = values.get("setup")
+    #     if setup and setup[-1] != "?":
+    #         raise ValueError("Badly formed question!")
+    #     return values
+
+
+class CoT_Parser(BaseModel):
+    Answer: str = Field(description="Just the answer only to the provided question without explanation")
+    reasoning: str = Field(description="Provide your step-by-step reasoning here")
+
+
+class RefinerParser(BaseModel):
+    Answer: str = Field(description="The final revised answer after incorporating feedback.")
+    reasoning: str = Field(description="The updated step-by-step reasoning post-refinement.")
+    continue_check: bool = Field(description="Indicates whether further refinement is necessary.")
+
+
+class FeedbackParser(BaseModel):
+    feedback: str = Field(description="Specific feedback provided to improve the rationale and answer.")
