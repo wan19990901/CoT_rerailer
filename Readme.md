@@ -15,7 +15,7 @@ To obtain a key, please go to the OpenAI official website and obtain an API key.
 
 ## Data
 All data is organized under the `data` folder, with subfolders for each category of data:
-- `GSM8K` and `MATHQA` datasets are located in the `Selfcheck` subfolder, as they were obtained from the SelfCheck repo (https://github.com/NingMiao/SelfCheck/tree/master/data).
+- Everydataset is located under the name (e.g.`TruthfulQA` are located in the `TruthfulQA` subfolder)
 - `MMLU` dataset is obtained from the Hugging Face dataset: https://huggingface.co/datasets/lukaemon/mmlu
 - `BigBench` dataset is obtained from the Hugging Face dataset: https://huggingface.co/datasets/maveriq/bigbenchhard
 
@@ -32,7 +32,7 @@ All main code is located in the `src` folder:
 - `llm_agent.py` defines llm model configs.
 - `derailer.py` contains the code for the first derailing part of our pipeline.
 - `rerailer.py` contains the code for the rerailer part of the pipeline.
-- `ablation_study_derailer_only.py` and `ablation_study_rerailer_only.py` are used for running the two ablation studies.
+- `ablation_study_1.py` and `ablation_study_2.py` are used for running the two ablation studies.
 
 To run the code:
 1. Ensure you have set up the conda environment and added your OpenAI GPT-4 API key.
@@ -56,8 +56,3 @@ All results are stored in the `result` folder. There are two subfolders:
 - Deductive Verification GitHub link: https://github.com/ritun16/chain-of-verification/tree/main?tab=readme-ov-file
 - Self Check GitHub link: https://github.com/lz1oceani/verify_cot/tree/main
 
-## References
-- MathQA dataset: https://github.com/NingMiao/SelfCheck/tree/master/data/MathQA
-- GSM8K dataset: https://github.com/NingMiao/SelfCheck/tree/master/data/GSM8K
-- MMLU dataset: https://huggingface.co/datasets/lukaemon/mmlu
-- BigBench dataset: https://huggingface.co/datasets/maveriq/bigbenchhard
